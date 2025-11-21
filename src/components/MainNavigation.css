@@ -1,0 +1,317 @@
+/* World Clock Footer */
+.nav-clock-top-wrapper {
+  width: 100%;
+  background: rgba(36, 48, 70, 0.92);
+  /* border-bottom: 1.5px solid #3578e5; */
+  margin-bottom: 0;
+  padding: 8px 0 2px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 2px 12px 0 #1a223355;
+  backdrop-filter: blur(2px);
+}
+
+.nav-world-clock {
+  width: 92%;
+  margin: 0 auto;
+  padding: 0;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nav-clock-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.97rem;
+  color: #e0e6ed;
+  background: rgba(80,140,255,0.13);
+  border-radius: 8px;
+  padding: 2px 10px 2px 10px;
+  min-width: 58px;
+  box-shadow: 0 1px 4px 0 #3578e522;
+}
+
+.nav-clock-label {
+  font-weight: 700;
+  color: #4fc3f7;
+  font-size: 0.91rem;
+  margin-bottom: 1px;
+}
+
+.nav-clock-time {
+  font-family: 'JetBrains Mono', 'Fira Mono', 'Consolas', monospace;
+  font-size: 1.07rem;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+
+/* FORCE section toggle always visible, never faded */
+.nav-section-toggle,
+.nav-section-toggle[aria-disabled="true"],
+.nav-section-toggle:disabled {
+  color: #f3f6fa !important;
+  background: #22335a !important;
+  opacity: 1 !important;
+  filter: none !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+  pointer-events: auto !important;
+}
+/* --- NAVIGATION SIDEBAR --- */
+.main-nav {
+  width: 270px;
+  height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #101624 0%, #1a2233 100%);
+  color: #eaf6ff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  box-shadow: none !important;
+  border-right: none !important;
+  overflow-y: auto;
+}
+
+.nav-header {
+  padding: 28px 24px 12px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: #f5f7fa;
+  margin-bottom: 8px;
+}
+
+.nav-logo-icon {
+  font-size: 2.2rem;
+  color: #4fc3f7;
+  filter: drop-shadow(0 2px 6px #1a2233cc);
+}
+
+.nav-logo-text h1 {
+  font-size: 1.28rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.nav-content {
+  flex: 1 1 auto;
+  padding: 10px 0 0 0;
+  overflow-y: auto;
+}
+
+.nav-section {
+  margin-bottom: 2px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  padding-bottom: 2px;
+}
+
+.nav-section-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #e0e6ed;
+  font-size: 1.04rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px 12px 24px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.18s, color 0.18s;
+}
+.nav-section-toggle:hover, .nav-section-toggle:focus {
+  background: rgba(0,224,255,0.10);
+  color: #00e0ff;
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  color: #b6d4fa;
+  text-decoration: none;
+  font-size: 1.04rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: background 0.18s, color 0.18s;
+  letter-spacing: 0.01em;
+}
+.nav-link.active {
+  background: linear-gradient(90deg, #00e0ff 0%, #3578e5 100%);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px 0 #00e0ff33;
+}
+.nav-link:hover {
+  background: rgba(0,224,255,0.13);
+  color: #00e0ff;
+}
+
+.nav-link-icon {
+  font-size: 1.22rem;
+  color: #00e0ff;
+  filter: drop-shadow(0 1px 4px #00e0ff44);
+}
+
+.nav-footer {
+  margin-top: auto;
+  padding: 18px 24px 24px 24px;
+  background: transparent;
+  border-top: 2px solid transparent;
+  border-image: linear-gradient(90deg, #4fc3f7 0%, #3578e5 100%);
+  border-image-slice: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 90px;
+}
+
+.nav-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.nav-user-avatar {
+  font-size: 1.3rem;
+  background: linear-gradient(135deg, #00e0ff 0%, #3578e5 100%);
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px 0 #3578e522;
+}
+
+.nav-logout-btn {
+  background: none;
+  border: none;
+  color: #f44336;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  transition: color 0.18s;
+}
+.nav-logout-btn:hover {
+  color: #b71c1c;
+}
+
+.nav-footer-branding {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-footer-logo {
+  font-size: 1.2rem;
+  color: #4fc3f7;
+}
+
+.nav-footer-text {
+  font-size: 0.98rem;
+  color: #cfd8dc;
+  font-weight: 500;
+}
+
+/* Scrollbar styling */
+.main-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-nav::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.main-nav::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+.main-nav::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-nav {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+}
+
+/* Tambahan: sidebar benar-benar full height, tanpa celah kosong di bawah */
+html, body, #__next {
+  height: 100%;
+}
+
+.main-nav {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+/* Gradient tipis di sisi kanan sidebar */
+.main-nav::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -18px;
+  width: 18px;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(24,31,42,0.00) 0%, rgba(80,140,255,0.10) 100%);
+  z-index: 101;
+}
+
+/* Biar area kosong di kanan sidebar tidak terlalu kontras, tambahkan background gelap tipis di body/layout utama */
+body {
+  background: linear-gradient(90deg, #181f2a 0px, #181f2a 270px, #20293a 270px, #20293a 100vw);
+  /* ...existing code... */
+}
+
+/* Jika pakai Next.js layout utama, bisa tambahkan di root layout: */
+#__next, .app-root, .main-layout {
+  background: transparent;
+}
+
+/* Hapus overlay, dan buat sidebar benar-benar nempel ke konten tanpa jarak/gradient/box-shadow */
+.sidebar-bg-overlay {
+  display: none !important;
+}

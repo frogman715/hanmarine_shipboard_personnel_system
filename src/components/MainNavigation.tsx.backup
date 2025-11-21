@@ -1,0 +1,316 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import './MainNavigation.css'
+
+interface User {
+  id: number
+  fullName: string
+  email: string
+  role: string
+}
+
+export default function MainNavigation() {
+  const pathname = usePathname()
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    // Get current user from cookie
+    const cookies = document.cookie.split(';')
+    const userCookie = cookies.find(c => c.trim().startsWith('user_session='))
+    if (userCookie) {
+      try {
+        const userData = JSON.parse(decodeURIComponent(userCookie.split('=')[1]))
+        setUser(userData)
+      } catch (e) {
+        console.error('Failed to parse user session')
+      }
+    }
+  }, [])
+
+  const handleLogout = () => {
+    document.cookie = 'user_session=; Max-Age=0; path=/'
+    window.location.href = '/login'
+  }
+
+  const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/')
+
+  return (
+    <nav className="main-nav">
+      {/* Header */}
+      <div className="nav-header">
+        <Link href="/dashboard" className="nav-logo">
+          <span className="nav-logo-icon">⚓</span>
+          <div className="nav-logo-text">
+            <h1>HANMARINE</h1>
+            <p>Personnel System</p>
+          </div>
+        </Link>
+        <div className="nav-compliance-badges">
+          <div className="compliance-badge">ISO 9001:2015</div>
+          <div className="compliance-badge">MLC 2006</div>
+        </div>
+      </div>
+
+      {/* Navigation Content */}
+      <div className="nav-content">
+        
+        {/* Dashboard */}
+        <div className="nav-section">
+          <ul className="nav-links">
+            <li>
+              <Link href="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📊</span>
+                <span>Dashboard</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Core HGQS Procedures (ISO 9001:2015) */}
+        <div className="nav-section">
+          <div className="nav-section-title">
+            <span className="nav-section-icon">📋</span>
+            Quality Management (HGQS)
+          </div>
+          <ul className="nav-links">
+            <li>
+              <Link href="/qms/risk" className={`nav-link ${isActive('/qms/risk') ? 'active' : ''}`}>
+                <span className="nav-link-icon">⚠️</span>
+                <span>Risk & Opportunities</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/qms/audits" className={`nav-link ${isActive('/qms/audits') ? 'active' : ''}`}>
+                <span className="nav-link-icon">🔍</span>
+                <span>Internal Audits</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/qms/cpar" className={`nav-link ${isActive('/qms/cpar') ? 'active' : ''}`}>
+                <span className="nav-link-icon">🔧</span>
+                <span>Corrective Actions</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/qms/suppliers" className={`nav-link ${isActive('/qms/suppliers') ? 'active' : ''}`}>
+                <span className="nav-link-icon">🤝</span>
+                <span>Supplier Management</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/qms/complaints" className={`nav-link ${isActive('/qms/complaints') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📢</span>
+                <span>Customer Complaints</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Crewing Operations (HGQS Annex B) */}
+        <div className="nav-section">
+          <div className="nav-section-title">
+            <span className="nav-section-icon">⚓</span>
+            Crewing Operations
+          </div>
+          <ul className="nav-links">
+            <li>
+              <Link href="/crew" className={`nav-link ${isActive('/crew') ? 'active' : ''}`}>
+                <span className="nav-link-icon">👥</span>
+                <span>Crew Database</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/applications" className={`nav-link ${isActive('/applications') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📝</span>
+                <span>Applications</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/certificates" className={`nav-link ${isActive('/certificates') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📜</span>
+                <span>Certificates</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/replacement-schedule" className={`nav-link ${isActive('/replacement-schedule') ? 'active' : ''}`}>
+                <span className="nav-link-icon">🔄</span>
+                <span>Replacement Plan</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/vessels" className={`nav-link ${isActive('/vessels') ? 'active' : ''}`}>
+                <span className="nav-link-icon">🚢</span>
+                <span>Vessels</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/owners" className={`nav-link ${isActive('/owners') ? 'active' : ''}`}>
+                <span className="nav-link-icon">🏢</span>
+                <span>Ship Owners</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* HR & Administration (HGQS Annex E) */}
+        <div className="nav-section">
+          <div className="nav-section-title">
+            <span className="nav-section-icon">👔</span>
+            HR & Administration
+          </div>
+          <ul className="nav-links">
+            <li>
+              <Link href="/hr/employees" className={`nav-link ${isActive('/hr/employees') ? 'active' : ''}`}>
+                <span className="nav-link-icon">👨‍💼</span>
+                <span>Employee Management</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/hr/performance" className={`nav-link ${isActive('/hr/performance') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📈</span>
+                <span>Performance Appraisal</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/hr/leave" className={`nav-link ${isActive('/hr/leave') ? 'active' : ''}`}>
+                <span className="nav-link-icon">🏖️</span>
+                <span>Leave Management</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Maritime Compliance (MLC 2006) */}
+        <div className="nav-section">
+          <div className="nav-section-title">
+            <span className="nav-section-icon">⚖️</span>
+            Maritime Compliance
+          </div>
+          <ul className="nav-links">
+            <li>
+              <Link href="/seafarers/cba" className={`nav-link ${isActive('/seafarers/cba') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📄</span>
+                <span>CBA Management</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/seafarers/contracts" className={`nav-link ${isActive('/seafarers/contracts') ? 'active' : ''}`}>
+                <span className="nav-link-icon">✍️</span>
+                <span>Seafarer Contracts</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/seafarers/wages" className={`nav-link ${isActive('/seafarers/wages') ? 'active' : ''}`}>
+                <span className="nav-link-icon">💰</span>
+                <span>Wages (Reg 2.2)</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/seafarers/grievances" className={`nav-link ${isActive('/seafarers/grievances') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📣</span>
+                <span>Grievance System</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Document Control (HGQS Proc 5 & 6) */}
+        <div className="nav-section">
+          <div className="nav-section-title">
+            <span className="nav-section-icon">📁</span>
+            Document Control
+          </div>
+          <ul className="nav-links">
+            <li>
+              <Link href="/documents" className={`nav-link ${isActive('/documents') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📂</span>
+                <span>Document Library</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/forms" className={`nav-link ${isActive('/forms') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📄</span>
+                <span>HGQS Forms</span>
+                <span className="nav-badge info">84</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/checklists" className={`nav-link ${isActive('/checklists') ? 'active' : ''}`}>
+                <span className="nav-link-icon">✅</span>
+                <span>Checklists</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Reports & Analytics */}
+        <div className="nav-section">
+          <div className="nav-section-title">
+            <span className="nav-section-icon">📊</span>
+            Reports & Analytics
+          </div>
+          <ul className="nav-links">
+            <li>
+              <Link href="/semester-reports" className={`nav-link ${isActive('/semester-reports') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📑</span>
+                <span>Deperla Reports</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/reports/certificates" className={`nav-link ${isActive('/reports/certificates') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📊</span>
+                <span>Certificate Reports</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* System Administration */}
+        <div className="nav-section">
+          <div className="nav-section-title">
+            <span className="nav-section-icon">⚙️</span>
+            Administration
+          </div>
+          <ul className="nav-links">
+            <li>
+              <Link href="/import" className={`nav-link ${isActive('/import') ? 'active' : ''}`}>
+                <span className="nav-link-icon">📥</span>
+                <span>Import Data</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/users" className={`nav-link ${isActive('/users') ? 'active' : ''}`}>
+                <span className="nav-link-icon">👤</span>
+                <span>User Management</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      {/* Footer with User Info */}
+      {user && (
+        <div className="nav-footer">
+          <div className="nav-user-info">
+            <div className="nav-user-avatar">{user.fullName.charAt(0)}</div>
+            <div className="nav-user-details">
+              <h4>{user.fullName}</h4>
+              <p>{user.role.replace(/_/g, ' ')}</p>
+            </div>
+          </div>
+          <button onClick={handleLogout} className="nav-logout-btn">
+            <span>🚪</span>
+            <span>Logout</span>
+          </button>
+          <div className="nav-version">
+            v1.0.0 • ISO 9001:2015 & MLC 2006
+          </div>
+        </div>
+      )}
+    </nav>
+  )
+}

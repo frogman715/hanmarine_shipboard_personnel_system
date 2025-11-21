@@ -1,0 +1,297 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import MainNavigation from '@/components/MainNavigation';
+
+interface Form {
+  code: string;
+  title: string;
+  file: string;
+  pages: number;
+}
+
+interface FormCategory {
+  title: string;
+  description: string;
+  forms: Form[];
+}
+
+interface FormsData {
+  [key: string]: FormCategory;
+}
+
+export default function FormsPage() {
+  const [forms, setForms] = useState<FormsData>({});
+  const [totals, setTotals] = useState({ crewing: 0, admin: 0, accounting: 0, total: 0 });
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [downloading, setDownloading] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadForms();
+  }, [selectedCategory, searchQuery]);
+
+  const loadForms = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (selectedCategory !== 'all') params.append('category', selectedCategory);
+      if (searchQuery) params.append('search', searchQuery);
+
+      const response = await fetch(`/api/forms/list?${params}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setForms(data.forms);
+        setTotals(data.totals);
+      }
+    } catch (error) {
+      console.error('Error loading forms:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownload = async (formCode: string, category: string, filename: string) => {
+    try {
+      setDownloading(formCode);
+      const response = await fetch(
+        `/api/forms/download?code=${formCode}&category=${category}&file=${encodeURIComponent(filename)}`
+      );
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        alert('Failed to download form');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Error downloading form');
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  const getCategoryColor = (code: string) => {
+    if (code.includes('-CR-')) return '#0ea5e9'; // cyan
+    if (code.includes('-AD-')) return '#8b5cf6'; // purple
+    if (code.includes('-AC-')) return '#f59e0b'; // orange
+    return '#64748b';
+  };
+
+  const getCategoryBadge = (code: string) => {
+    if (code.includes('-CR-')) return { label: 'Crewing', color: '#0ea5e9' };
+    if (code.includes('-AD-')) return { label: 'Admin', color: '#8b5cf6' };
+    if (code.includes('-AC-')) return { label: 'Accounting', color: '#f59e0b' };
+    return { label: 'Other', color: '#64748b' };
+  };
+
+  return (
+    <main style={{ padding: 20, maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 30
+      }}>
+        <div>
+          <h1 style={{ margin: 0, marginBottom: 8 }}>Forms Management</h1>
+          <p style={{ margin: 0, color: '#64748b' }}>
+            42 forms across 3 departments
+          </p>
+        </div>
+      </div>
+
+      {/* Filter Tabs */}
+      <div style={{
+        display: 'flex',
+        gap: 10,
+        marginBottom: 20,
+        borderBottom: '2px solid #e2e8f0',
+        paddingBottom: 10
+      }}>
+        {['ALL', 'CR', 'AD', 'AC'].map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategory(cat as any)}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '6px 6px 0 0',
+              border: 'none',
+              background: category === cat ? '#0ea5e9' : 'transparent',
+              color: category === cat ? 'white' : '#64748b',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            {cat === 'ALL' ? 'All Forms' : 
+             cat === 'CR' ? 'Crewing (17)' :
+             cat === 'AD' ? 'Admin (20)' :
+             'Accounting (5)'}
+          </button>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div style={{ marginBottom: 20 }}>
+        <input
+          type="text"
+          placeholder="Search forms by code or name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            width: '100%',
+            maxWidth: 400,
+            padding: '10px 16px',
+            borderRadius: 8,
+            border: '1px solid #e2e8f0',
+            fontSize: 14
+          }}
+        />
+      </div>
+
+      {/* Forms Grid */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: 40, color: '#64748b' }}>
+          Loading forms...
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: 20
+        }}>
+          {filteredForms.map(form => {
+            const badge = getCategoryBadge(form.code);
+            return (
+              <Link
+                key={form.id}
+                href={`/forms/${form.code}`}
+                style={{ textDecoration: 'none' }}
+              >
+                <div style={{
+                  background: 'white',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 12,
+                  padding: 20,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = getCategoryColor(form.code);
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#e2e8f0';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+                >
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: 12
+                  }}>
+                    <div style={{
+                      fontFamily: 'monospace',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: getCategoryColor(form.code),
+                      background: `${getCategoryColor(form.code)}15`,
+                      padding: '4px 10px',
+                      borderRadius: 6
+                    }}>
+                      {form.code}
+                    </div>
+                    <div style={{
+                      fontSize: 11,
+                      padding: '4px 8px',
+                      borderRadius: 4,
+                      background: badge.color,
+                      color: 'white',
+                      fontWeight: 600
+                    }}>
+                      {badge.label}
+                    </div>
+                  </div>
+
+                  <h3 style={{
+                    margin: 0,
+                    marginBottom: 8,
+                    fontSize: 16,
+                    color: '#1e293b'
+                  }}>
+                    {form.name}
+                  </h3>
+
+                  {form.description && (
+                    <p style={{
+                      margin: 0,
+                      fontSize: 13,
+                      color: '#64748b',
+                      lineHeight: 1.5,
+                      flex: 1
+                    }}>
+                      {form.description}
+                    </p>
+                  )}
+
+                  {form._count && (
+                    <div style={{
+                      marginTop: 12,
+                      paddingTop: 12,
+                      borderTop: '1px solid #e2e8f0',
+                      fontSize: 12,
+                      color: '#64748b',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <span>
+                        📊 {form._count.submissions} submission{form._count.submissions !== 1 ? 's' : ''}
+                      </span>
+                      <span style={{ color: getCategoryColor(form.code), fontWeight: 600 }}>
+                        View →
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {!loading && filteredForms.length === 0 && (
+        <div style={{
+          textAlign: 'center',
+          padding: 60,
+          color: '#94a3b8'
+        }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>📋</div>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>
+            No forms found
+          </div>
+          <div style={{ fontSize: 14 }}>
+            Try adjusting your search or filter
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}

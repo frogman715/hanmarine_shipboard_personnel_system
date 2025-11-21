@@ -1,0 +1,481 @@
+'use client';
+
+import { useState } from 'react';
+import MainNavigation from '@/components/MainNavigation';
+import './application.css';
+
+interface ApplicationData {
+  fullName: string;
+  dateOfBirth: string;
+  placeOfBirth: string;
+  nationality: string;
+  religion: string;
+  maritalStatus: string;
+  address: string;
+  phone: string;
+  email: string;
+  emergencyContact: string;
+  emergencyPhone: string;
+  rankApplied: string;
+  department: string;
+  availableDate: string;
+  expectedSalary: string;
+  documents: Record<string, { hasDoc: boolean; number: string; expiry: string }>;
+  seaService: Array<{
+    vesselName: string;
+    vesselType: string;
+    rank: string;
+    fromDate: string;
+    toDate: string;
+    reasonLeaving: string;
+  }>;
+  interviewDate: string;
+  interviewer: string;
+  technicalScore: number;
+  communicationScore: number;
+  appearanceScore: number;
+  motivationScore: number;
+  interviewNotes: string;
+  applicationStatus: 'pending' | 'approved' | 'rejected';
+  approvedBy: string;
+  approvalDate: string;
+  remarks: string;
+}
+
+export default function ApplicationFormPage() {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<ApplicationData>({
+    fullName: '',
+    dateOfBirth: '',
+    placeOfBirth: '',
+    nationality: 'Indonesian',
+    religion: '',
+    maritalStatus: 'Single',
+    address: '',
+    phone: '',
+    email: '',
+    emergencyContact: '',
+    emergencyPhone: '',
+    rankApplied: '',
+    department: 'Deck',
+    availableDate: '',
+    expectedSalary: '',
+    documents: {
+      passport: { hasDoc: false, number: '', expiry: '' },
+      seamanBook: { hasDoc: false, number: '', expiry: '' },
+      coc: { hasDoc: false, number: '', expiry: '' },
+      coe: { hasDoc: false, number: '', expiry: '' },
+      medical: { hasDoc: false, number: '', expiry: '' },
+      yellowFever: { hasDoc: false, number: '', expiry: '' },
+      basicSafety: { hasDoc: false, number: '', expiry: '' },
+    },
+    seaService: [],
+    interviewDate: '',
+    interviewer: '',
+    technicalScore: 0,
+    communicationScore: 0,
+    appearanceScore: 0,
+    motivationScore: 0,
+    interviewNotes: '',
+    applicationStatus: 'pending',
+    approvedBy: '',
+    approvalDate: '',
+    remarks: '',
+  });
+
+  const [saving, setSaving] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async () => {
+    setSaving(true);
+    try {
+      const response = await fetch('/api/applications/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        alert('Application submitted successfully!');
+      } else {
+        alert('Failed to submit application');
+      }
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Error submitting application');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (submitted && submissionId) {
+    return (
+      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+        <div style={{ padding: '20px', background: '#dcfce7', border: '2px solid #16a34a', borderRadius: '8px', marginBottom: '20px' }}>
+          <h3 style={{ margin: '0 0 10px 0', color: '#16a34a' }}>✅ Application Submitted!</h3>
+          <p style={{ margin: 0, color: '#15803d' }}>Submission ID: {submissionId}</p>
+        </div>
+        <button onClick={() => window.history.back()} style={{ padding: '10px 20px', background: '#0284c7', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          ← Back
+        </button>
+      </main>
+    )
+  }
+
+  const searchExistingCrew = async () => {
+    if (!searchTerm.trim()) return
+    
+    try {
+      const res = await fetch(`/api/crew/search?q=${encodeURIComponent(searchTerm)}`)
+      if (res.ok) {
+        const data = await res.json()
+        setSearchResults(data)
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+    }
+  }
+
+  const selectExistingCrew = (crew: CrewSearchResult) => {
+    setSelectedCrew(crew)
+    setCrewId(crew.id)
+  }
+
+  const createNewCrew = async () => {
+    if (!newCrewData.fullName || !newCrewData.rank) {
+      alert('Nama lengkap dan rank wajib diisi')
+      return
+    }
+
+    try {
+      const res = await fetch('/api/crew', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCrewData),
+      })
+      if (res.ok) {
+        const newCrew = await res.json()
+        setCrewId(newCrew.id)
+        setShowForm(true)
+      } else {
+        alert('Failed to create crew')
+      }
+    } catch (error) {
+      alert('Error creating crew')
+    }
+  }
+
+  if (!applicationType) {
+    return (
+      <>
+        <MainNavigation />
+        <main style={{ marginLeft: '220px', padding: '2rem', width: 'calc(100vw - 220px)', maxWidth: '800px' }}>
+          <style>{`
+            .option-card {
+              padding: 2rem;
+              border: 2px solid #1f2937;
+              border-radius: 12px;
+              margin-bottom: 1.5rem;
+              background: #111827;
+              cursor: pointer;
+              transition: all 0.3s;
+            }
+            .option-card:hover {
+              border-color: #0ea5e9;
+              background: #1f2937;
+              transform: translateY(-2px);
+            }
+            .option-title {
+              font-size: 1.5rem;
+              font-weight: bold;
+              margin: 0 0 0.5rem 0;
+              color: #e5e7eb;
+            }
+            .option-desc {
+              color: #9ca3af;
+              margin: 0;
+              font-size: 0.95rem;
+            }
+          `}</style>
+
+          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>📝 Crew Application Form (HGF-CR-02)</h1>
+          <p style={{ color: '#9ca3af', marginBottom: '2rem' }}>Choose application type</p>
+
+          <div 
+            className="option-card" 
+            onClick={() => setApplicationType('existing')}
+          >
+            <h2 className="option-title">👤 Option 1: Existing Crew</h2>
+            <p className="option-desc">
+              Pelaut sudah ada di database. Tinggal cari berdasarkan nama atau crew code, data otomatis muncul.
+            </p>
+          </div>
+
+          <div 
+            className="option-card" 
+            onClick={() => setApplicationType('new')}
+          >
+            <h2 className="option-title">✨ Option 2: New Crew</h2>
+            <p className="option-desc">
+              Pelaut baru belum terdaftar. Isi form lengkap untuk mendaftarkan crew baru sekaligus buat application.
+            </p>
+          </div>
+        </main>
+      </>
+    )
+  }
+
+  if (applicationType === 'existing' && !showForm) {
+    return (
+      <>
+        <MainNavigation />
+        <main style={{ marginLeft: '220px', padding: '2rem', width: 'calc(100vw - 220px)', maxWidth: '800px' }}>
+          <style>{`
+            .search-box {
+              padding: 1.5rem;
+              background: #111827;
+              border: 1px solid #1f2937;
+              border-radius: 12px;
+              margin-bottom: 1.5rem;
+            }
+            .search-input {
+              width: 100%;
+              padding: 0.75rem;
+              background: #1f2937;
+              border: 1px solid #374151;
+              border-radius: 8px;
+              color: #e5e7eb;
+              font-size: 1rem;
+              margin-bottom: 1rem;
+            }
+            .search-btn {
+              padding: 0.75rem 1.5rem;
+              background: #0ea5e9;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+            }
+            .search-btn:hover {
+              background: #0284c7;
+            }
+            .crew-result {
+              padding: 1rem;
+              background: #1f2937;
+              border: 1px solid #374151;
+              border-radius: 8px;
+              margin-bottom: 0.75rem;
+              cursor: pointer;
+              transition: all 0.2s;
+            }
+            .crew-result:hover {
+              border-color: #0ea5e9;
+              background: #374151;
+            }
+            .crew-result.selected {
+              border-color: #10b981;
+              background: #064e3b;
+            }
+            .back-btn {
+              padding: 0.5rem 1rem;
+              background: #374151;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              cursor: pointer;
+              margin-bottom: 1.5rem;
+            }
+            .continue-btn {
+              padding: 0.75rem 1.5rem;
+              background: #10b981;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+              width: 100%;
+            }
+            .continue-btn:disabled {
+              background: #374151;
+              cursor: not-allowed;
+            }
+          `}</style>
+
+          <button className="back-btn" onClick={() => setApplicationType(null)}>← Back</button>
+
+          <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>👤 Search Existing Crew</h1>
+          <p style={{ color: '#9ca3af', marginBottom: '1.5rem' }}>Cari berdasarkan nama atau crew code</p>
+
+          <div className="search-box">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Ketik nama pelaut atau crew code..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && searchExistingCrew()}
+            />
+            <button className="search-btn" onClick={searchExistingCrew}>
+              🔍 Search
+            </button>
+          </div>
+
+          {searchResults.length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '1.125rem', marginBottom: '1rem' }}>Results:</h3>
+              {searchResults.map((crew) => (
+                <div
+                  key={crew.id}
+                  className={`crew-result ${selectedCrew?.id === crew.id ? 'selected' : ''}`}
+                  onClick={() => selectExistingCrew(crew)}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                    <div>
+                      <strong style={{ fontSize: '1.05rem', color: '#e5e7eb' }}>{crew.fullName}</strong>
+                      <p style={{ margin: '0.25rem 0 0', color: '#9ca3af', fontSize: '0.875rem' }}>
+                        {crew.rank} {crew.vessel && `• ${crew.vessel}`}
+                      </p>
+                    </div>
+                    <span style={{ 
+                      padding: '0.25rem 0.75rem', 
+                      background: '#064e3b', 
+                      color: '#6ee7b7', 
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600
+                    }}>
+                      {crew.crewCode}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {selectedCrew && (
+            <button className="continue-btn" onClick={() => setShowForm(true)}>
+              Continue with {selectedCrew.fullName} →
+            </button>
+          )}
+        </main>
+      </>
+    )
+  }
+
+  if (applicationType === 'new' && !showForm) {
+    return (
+      <>
+        <MainNavigation />
+        <main style={{ marginLeft: '220px', padding: '2rem', width: 'calc(100vw - 220px)', maxWidth: '800px' }}>
+          <style>{`
+            .form-box {
+              padding: 2rem;
+              background: #111827;
+              border: 1px solid #1f2937;
+              border-radius: 12px;
+            }
+            .form-label {
+              display: block;
+              margin-bottom: 0.5rem;
+              color: #e5e7eb;
+              font-weight: 500;
+              font-size: 0.95rem;
+            }
+            .form-input {
+              width: 100%;
+              padding: 0.75rem;
+              background: #1f2937;
+              border: 1px solid #374151;
+              border-radius: 8px;
+              color: #e5e7eb;
+              margin-bottom: 1rem;
+              font-size: 1rem;
+            }
+            .create-btn {
+              padding: 0.75rem 1.5rem;
+              background: #10b981;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-weight: 600;
+              cursor: pointer;
+              width: 100%;
+              font-size: 1rem;
+            }
+            .create-btn:hover {
+              background: #059669;
+            }
+          `}</style>
+
+          <button className="back-btn" onClick={() => setApplicationType(null)}>← Back</button>
+
+          <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>✨ Register New Crew</h1>
+          <p style={{ color: '#9ca3af', marginBottom: '1.5rem' }}>Isi data crew baru untuk mendaftar</p>
+
+          <div className="form-box">
+            <label className="form-label">
+              Nama Lengkap *
+              <input
+                type="text"
+                className="form-input"
+                placeholder="mis. JOHN DOE"
+                value={newCrewData.fullName}
+                onChange={(e) => setNewCrewData({...newCrewData, fullName: e.target.value})}
+              />
+            </label>
+
+            <label className="form-label">
+              Rank / Jabatan *
+              <input
+                type="text"
+                className="form-input"
+                placeholder="mis. CO, 2E, AB"
+                value={newCrewData.rank}
+                onChange={(e) => setNewCrewData({...newCrewData, rank: e.target.value})}
+              />
+            </label>
+
+            <label className="form-label">
+              Vessel (Optional)
+              <input
+                type="text"
+                className="form-input"
+                placeholder="mis. MT ALFA BALTICA"
+                value={newCrewData.vessel}
+                onChange={(e) => setNewCrewData({...newCrewData, vessel: e.target.value})}
+              />
+            </label>
+
+            <label className="form-label">
+              Status
+              <select
+                className="form-input"
+                value={newCrewData.status}
+                onChange={(e) => setNewCrewData({...newCrewData, status: e.target.value})}
+              >
+                <option value="AVAILABLE">AVAILABLE</option>
+                <option value="ONBOARD">ONBOARD</option>
+                <option value="ON_LEAVE">ON LEAVE</option>
+              </select>
+            </label>
+
+            <button className="create-btn" onClick={createNewCrew}>
+              Create Crew & Continue to Application →
+            </button>
+          </div>
+        </main>
+      </>
+    )
+  }
+
+  return (
+    <main style={{ padding: '20px' }}>
+      <button onClick={() => setShowForm(false)} style={{ padding: '8px 16px', marginBottom: '16px', background: '#6b7280', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+        ← Change Crew
+      </button>
+      {crewId && <DynamicForm formCode="HGF-CR-02" crewId={crewId} onSubmit={handleSubmit} />}
+    </main>
+  )
+}

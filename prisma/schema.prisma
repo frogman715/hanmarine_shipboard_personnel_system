@@ -1,0 +1,1615 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Crew {
+  id Int @id @default(autoincrement())
+
+  // Dari header form / data pribadi
+  crewCode String? @unique // 10 digit code dari sertifikat (NAT.LIC 10 digit depan)
+  fullName String
+  rank     String?
+  vessel   String? // NAME OF VESSEL
+  status   String? // STATUS (single/married dll)
+
+  placeOfBirth String?
+  dateOfBirth  DateTime?
+  religion     String?
+  lastSchool   String? // LAST SCHOOL /PLACE/YEAR
+  totalFamily  Int?
+
+  wifeName    String?
+  familyNotes String? // FAMILY ORGANIZATION
+
+  // Fisik
+  eyeSight  String?
+  bloodType String?
+  heightCm  Int?
+  weightKg  Int?
+  waistSize String?
+  shoeSize  String?
+
+  // Kontak & alamat
+  address     String?
+  phoneHome   String?
+  phoneMobile String?
+
+  // Status sistem
+  crewStatus CrewStatus @default(ACTIVE)
+  reportedToOffice Boolean @default(true) // false = crew tidak lapor setelah off
+  reportedToOfficeDate DateTime? // tanggal lapor ke kantor
+  inactiveReason String? // "Tidak Lapor", "Pindah Kantor", "Resign", dll
+  lastOffboardDate DateTime? // tanggal terakhir off dari kapal
+  offboardNotes String? // catatan tambahan
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relasi
+  certificates Certificate[]
+  assignments  Assignment[]
+  applications EmploymentApplication[]
+  joiningInstructions JoiningInstruction[]
+  evaluations CrewEvaluation[]
+  repatriations Repatriation[]
+  incidentReports IncidentReport[]
+  checklists DocumentChecklist[]
+  seaServices SeaServiceExperience[]
+  formSubmissions FormSubmission[]
+  movements CrewMovement[]
+  onboardingProgress OnboardingProgress?
+  contracts SeafarerContract[] @relation("CrewContracts")
+}
+
+enum CrewStatus {
+  APPLICANT   // New application, not yet processed
+  APPROVED    // Approved by management, waiting for documents
+  STANDBY     // Ready for deployment, all docs complete
+  ONBOARD     // Currently working on vessel
+  SIGN_OFF    // Just signed off, in transit
+  VACATION    // On vacation after sign-off (same as STANDBY but with report tracking)
+  EX_CREW     // Former crew, inactive
+  BLACKLISTED // Banned from rehiring
+  
+  // Legacy statuses (keep for backward compatibility)
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  AVAILABLE
+}
+
+model Certificate {
+  id           Int       @id @default(autoincrement())
+  crewId       Int
+  type         String
+  issueDate    DateTime?
+  expiryDate   DateTime?
+  issuer       String?
+  remarks      String?
+  documentPath String?   // Path to PDF file
+
+  crew Crew @relation(fields: [crewId], references: [id], onDelete: Cascade)
+
+  @@index([crewId])
+  @@index([expiryDate])
+}
+
+model Assignment {
+  id         Int       @id @default(autoincrement())
+  crewId     Int
+  vesselName String
+  rank       String
+  signOn     DateTime?
+  signOff    DateTime?
+  status     String    @default("PLANNED")
+
+  crew      Crew           @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  vessel    Vessel?        @relation("VesselAssignments", fields: [vesselName], references: [name])
+  movements CrewMovement[]
+}
+
+// === Owner / Pemilik Kapal ===
+model Owner {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  code      String?  // Short code (e.g., LUNDQVIST, INTERGIS)
+  country   String?
+  contact   String?
+  email     String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vessels Vessel[]
+
+  @@index([name])
+}
+
+// === Vessel / Kapal Master ===
+model Vessel {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  flag        String  // Country flag (BAHAMAS, MARSHALL, etc.)
+  vesselType  String? // CRUDE OIL, CONTAINER, etc.
+  owner       String?
+  ownerId     Int?
+  grt         Float?    // Gross Tonnage (bisa decimal)
+  dwt         Float?    // Dead Weight Tonnage
+  hp          Float?    // Horse Power (H.P.)
+  imo         String? // IMO number
+  callSign    String? // Radio call sign
+  inmarsatNo  String? // INMARSAT NO
+  registrationYear Int?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assignments Assignment[] @relation("VesselAssignments")
+  ownerRel    Owner?       @relation(fields: [ownerId], references: [id])
+  movements   CrewMovement[]
+
+  @@index([flag])
+  @@index([name])
+  @@index([ownerId])
+  @@index([vesselType])
+}
+
+// === Application for Employment (HGF-CR-02) – per aplikasi ===
+model EmploymentApplication {
+  id              Int       @id @default(autoincrement())
+  crewId          Int
+  appliedRank     String? // rank yg dilamar
+  applicationDate DateTime? @default(now())
+  notes           String?
+  status          ApplicationStatus    @default(APPLIED)
+  
+  // Multi-level approval tracking
+  currentApprovalLevel Int @default(1) // 1=Crewing Manager, 2=Expert Staff, 3=Director, 4=Principal
+  crewingManagerApproval    String? // "APPROVED", "REJECTED", "PENDING"
+  crewingManagerApprovalDate DateTime?
+  crewingManagerComments     String?
+  crewingManagerId           Int?
+  
+  expertStaffApproval     String? // "APPROVED", "REJECTED", "PENDING"
+  expertStaffApprovalDate DateTime?
+  expertStaffComments     String?
+  expertStaffId           Int?
+  
+  directorApproval     String? // "APPROVED", "REJECTED", "PENDING"
+  directorApprovalDate DateTime?
+  directorComments     String?
+  directorId           Int?
+  
+  principalApproval     String? // "APPROVED", "REJECTED", "PENDING"
+  principalApprovalDate DateTime?
+  principalComments     String?
+  
+  // Interview & assessment
+  interviewDate   DateTime?
+  interviewNotes  String?
+  offeredDate     DateTime?
+  acceptedDate    DateTime?
+  rejectionReason String?
+  
+  // Relations
+  crew                Crew                @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  checklists          DocumentChecklist[]
+  joiningInstructions JoiningInstruction[]
+  formSubmissions     FormSubmission[]
+  approvalHistory     ApprovalHistory[]
+  
+  crewingManager User? @relation("CrewingManagerApprovals", fields: [crewingManagerId], references: [id])
+  expertStaff    User? @relation("ExpertStaffApprovals", fields: [expertStaffId], references: [id])
+  director       User? @relation("DirectorApprovals", fields: [directorId], references: [id])
+  
+  @@index([crewId])
+  @@index([status])
+  @@index([currentApprovalLevel])
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  INTERVIEW
+  APPROVED
+  OFFERED
+  ACCEPTED
+  REJECTED
+}
+
+// === Document Check List (HGF-CR-01) – per crew/per application ===
+model DocumentChecklist {
+  id            Int  @id @default(autoincrement())
+  crewId        Int
+  applicationId Int?
+
+  // contoh kolom – nanti bisa kita lanjutkan sesuai file Excel
+  passportOk   Boolean? // Passport
+  seamanBookOk Boolean? // Seaman’s Book
+  cocOk        Boolean? // COC
+  medicalOk    Boolean? // Medical
+  visaOk       Boolean? // Visa
+  vaccinationOk    Boolean?
+  photoIdOk        Boolean?
+  policeClearanceOk Boolean?
+  trainingCertsOk  Boolean?
+  covidVaccineOk   Boolean?
+  remarks      String?
+  // Generic procedure checklist stored as JSON (per application)
+  // Example shape:
+  // {
+  //   dataCollection: true,
+  //   scanning: false,
+  //   dataEntry: false,
+  //   cvCreated: false,
+  //   cvSentToOwner: false,
+  //   ownerRejected: false,
+  //   ownerApproved: false,
+  //   docChecklistPrepared: false,
+  //   nextOfKinPrepared: false,
+  //   declarationPrepared: false,
+  //   trainingRecordPrepared: false,
+  //   onBoarded: false,
+  //   archived: false
+  // }
+  procedure   Json?
+
+  crew        Crew                   @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  application EmploymentApplication? @relation(fields: [applicationId], references: [id])
+}
+
+// === Sea Service / Pengalaman Pelayaran ===
+model SeaServiceExperience {
+  id     Int @id @default(autoincrement())
+  crewId Int
+
+  vesselName  String?
+  rank        String?
+  grt         Int? // GT
+  dwt         Int?
+  engineType  String?
+  bhp         Int?
+  companyName String?
+  flag        String?
+  signOn      DateTime?
+  signOff     DateTime?
+  remarks     String?
+
+  crew Crew @relation(fields: [crewId], references: [id], onDelete: Cascade)
+
+  @@index([crewId])
+  @@index([signOn])
+}
+
+// === Joining Instruction (issued before sign-on) ===
+model JoiningInstruction {
+  id            Int       @id @default(autoincrement())
+  crewId        Int?
+  applicationId Int?
+  instructionText String
+  travelDetails String?
+  issuedAt      DateTime? @default(now())
+  issuedBy      String?
+
+  crew        Crew?                @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  application EmploymentApplication? @relation(fields: [applicationId], references: [id])
+}
+
+// === Crew Evaluation Report ===
+model CrewEvaluation {
+  id        Int      @id @default(autoincrement())
+  crewId    Int
+  evaluator String?
+  date      DateTime @default(now())
+  rank      String?
+  score     Int?
+  comments  String?
+
+  crew Crew @relation(fields: [crewId], references: [id], onDelete: Cascade)
+}
+
+// === Repatriation / Final Account ===
+model Repatriation {
+  id           Int      @id @default(autoincrement())
+  crewId       Int
+  repatriationDate DateTime?
+  reason       String?
+  finalAccount Float?
+  processedBy  String?
+  remarks      String?
+
+  crew Crew @relation(fields: [crewId], references: [id], onDelete: Cascade)
+}
+
+// === Incident / Near-miss Report ===
+model IncidentReport {
+  id          Int      @id @default(autoincrement())
+  crewId      Int?
+  date        DateTime @default(now())
+  vessel      String?
+  incidentType String?
+  description String?
+  actionsTaken String?
+  reportedBy  String?
+  severity    String?
+
+  crew Crew? @relation(fields: [crewId], references: [id], onDelete: Cascade)
+}
+
+// === KPI snapshots for reporting ===
+model KpiSnapshot {
+  id                    Int     @id @default(autoincrement())
+  capturedAt            DateTime @default(now())
+  docExpiryCompliance   Float?  // percent
+  onTimeCrewChange      Float?  // percent
+  trainingCompletion    Float?  // percent
+  evaluationCompletion  Float?  // percent
+  incidentsPerThousand  Float?  // incidents per 1,000 man-days
+}
+
+// === Form Templates (HGF-CR-01, HGF-CR-02, etc.) ===
+model FormTemplate {
+  id          Int     @id @default(autoincrement())
+  code        String  @unique // HGF-CR-01, HGF-CR-02, etc.
+  name        String  // Full name of the form
+  title       String  // Display title
+  description String?
+  category    String? // RECRUITMENT, APPLICATION, DOCUMENTATION, etc.
+  version     String  @default("1.0")
+  fields      Json    // JSON structure with sections and fields
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  submissions FormSubmission[]
+  
+  @@index([code])
+  @@index([category])
+}
+
+// === Form Submissions (Completed forms) ===
+model FormSubmission {
+  id            Int              @id @default(autoincrement())
+  templateId    Int
+  crewId        Int?
+  applicationId Int?
+  submittedAt   DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  status        SubmissionStatus @default(DRAFT)
+  formData      Json             // Submitted form data as JSON
+
+  template    FormTemplate            @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  crew        Crew?                   @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  application EmploymentApplication?  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  @@index([templateId])
+  @@index([crewId])
+  @@index([status])
+}
+
+enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+// === Semester Reports (Laporan Semester ke Perhubungan) ===
+model SemesterReport {
+  id           Int      @id @default(autoincrement())
+  period       String   // "2025-S1" or "2025-S2"
+  startDate    DateTime
+  endDate      DateTime
+  generatedAt  DateTime @default(now())
+  status       String   @default("DRAFT") // DRAFT, SUBMITTED, APPROVED
+  
+  // Summary data
+  totalJoining Int      @default(0)
+  totalSignOff Int      @default(0)
+  totalOnboard Int      @default(0)
+  
+  notes        String?
+  
+  movements CrewMovement[]
+  
+  @@index([period])
+  @@index([startDate, endDate])
+}
+
+// === Crew Movements (Join/Off tracking for semester report) ===
+model CrewMovement {
+  id             Int      @id @default(autoincrement())
+  crewId         Int
+  vesselId       Int?
+  assignmentId   Int?
+  movementType   String   // "JOIN", "SIGN_OFF"
+  movementDate   DateTime
+  rank           String?
+  vessel         String?
+  remarks        String?
+  reportId       Int?     // Link to semester report
+  
+  createdAt      DateTime @default(now())
+  
+  crew       Crew             @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  vesselRef  Vessel?          @relation(fields: [vesselId], references: [id], onDelete: SetNull)
+  assignment Assignment?      @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  report     SemesterReport?  @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  
+  @@index([crewId])
+  @@index([movementDate])
+  @@index([movementType])
+  @@index([reportId])
+}
+
+// User & Authentication System
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String   // Hashed password
+  fullName  String
+  role      UserRole @default(OPERATIONAL_STAFF)
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations - approval tracking
+  crewingManagerApprovals EmploymentApplication[] @relation("CrewingManagerApprovals")
+  expertStaffApprovals    EmploymentApplication[] @relation("ExpertStaffApprovals")
+  directorApprovals       EmploymentApplication[] @relation("DirectorApprovals")
+  
+  @@index([username])
+  @@index([email])
+  @@index([role])
+}
+
+// Approval History tracking
+model ApprovalHistory {
+  id            Int      @id @default(autoincrement())
+  applicationId Int
+  userId        Int
+  userRole      UserRole
+  action        String   // "APPROVED", "REJECTED", "PENDING"
+  comments      String?
+  createdAt     DateTime @default(now())
+  
+  application EmploymentApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  @@index([applicationId])
+  @@index([userId])
+}
+
+enum UserRole {
+  OWNER                 // Owner - Full access, can view all applications and approve/reject CVs
+  DIRECTOR              // Director - Financial/accounting authority
+  ADMIN                 // Admin - Manages documents and crew records
+  CREWING_MANAGER       // QMR/Crewing Manager - Core operations, crew selection
+  EXPERT_STAFF          // Technical maritime expertise
+  DOCUMENTATION_OFFICER // Document verification, visa processing
+  ACCOUNTING_OFFICER    // Wages, allotments, financial processing
+  TRAINING_OFFICER      // Training delivery and assessment
+  OPERATIONAL_STAFF     // Daily operational support
+}
+
+// === Onboarding Progress Tracking ===
+model OnboardingProgress {
+  id        Int      @id @default(autoincrement())
+  crewId    Int      @unique
+  
+  // Step 1: Data Collection
+  step1_dataCollection      Boolean   @default(false)
+  step1_completedAt         DateTime?
+  step1_notes               String?
+  
+  // Step 2: Document Scanning
+  step2_documentScanning    Boolean   @default(false)
+  step2_completedAt         DateTime?
+  step2_folderPath          String?
+  step2_notes               String?
+  
+  // Step 3: Data Input
+  step3_dataInput           Boolean   @default(false)
+  step3_completedAt         DateTime?
+  step3_notes               String?
+  
+  // Step 4: CV Creation
+  step4_cvCreated           Boolean   @default(false)
+  step4_completedAt         DateTime?
+  step4_cvFilePath          String?
+  step4_flagType            String?   // BAHAMAS, KOREA, etc.
+  step4_notes               String?
+  
+  // Step 5: Owner Approval
+  step5_sentToOwner         Boolean   @default(false)
+  step5_ownerName           String?
+  step5_sentAt              DateTime?
+  step5_approved            Boolean?  // null=pending, true=approved, false=rejected
+  step5_approvedAt          DateTime?
+  step5_rejectionReason     String?
+  step5_notes               String?
+  
+  // Step 6: Final Approval & Checklist
+  step6_finalApproval       Boolean   @default(false)
+  step6_completedAt         DateTime?
+  step6_docChecklist        Boolean   @default(false)
+  step6_nextOfKind          Boolean   @default(false)
+  step6_declaration         Boolean   @default(false)
+  step6_trainingRecord      Boolean   @default(false)
+  step6_notes               String?
+  
+  // Step 7: Onboard
+  step7_onboard             Boolean   @default(false)
+  step7_completedAt         DateTime?
+  step7_vesselName          String?
+  step7_crpUpdated          Boolean   @default(false)
+  step7_hublaUpdated        Boolean   @default(false)
+  step7_notes               String?
+  
+  // Step 8: Finish
+  step8_finished            Boolean   @default(false)
+  step8_completedAt         DateTime?
+  step8_rackLocation        String?   // Physical location of documents
+  step8_notes               String?
+  
+  // Overall status
+  currentStep               Int       @default(1)  // 1-8
+  overallStatus             OnboardingStatus @default(IN_PROGRESS)
+  
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+  
+  crew Crew @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  
+  @@index([crewId])
+  @@index([currentStep])
+  @@index([overallStatus])
+}
+
+enum OnboardingStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  AWAITING_OWNER_APPROVAL
+  OWNER_REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+// Document Management System (ISO 9001:2015 Section 7.5)
+model ManagedDocument {
+  id              Int      @id @default(autoincrement())
+  documentCode    String   @unique // e.g., HGF-CR-02-Rev-03
+  documentTitle   String
+  documentType    DocumentType
+  category        String   // Crewing, Admin, Accounting
+  
+  currentRevision Int      @default(0)
+  revisionDate    DateTime @default(now())
+  effectiveDate   DateTime?
+  
+  status          DocumentStatus @default(DRAFT)
+  
+  // ISO 9001:2015 Section 7.5.3 Control of documented information
+  preparedBy      String?  // QMR or staff
+  reviewedBy      String?  // QMR
+  approvedBy      String?  // Director
+  
+  filePath        String   // Path to current version file
+  fileSize        Int?     // File size in bytes
+  fileType        String?  // .docx, .xlsx, .pdf
+  
+  description     String?  @db.Text
+  remarks         String?  @db.Text
+  
+  // Retention
+  retentionPeriod Int?     // Years to retain
+  disposalDate    DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  revisions       DocumentRevision[]
+  approvals       DocumentApproval[]
+  distributions   DocumentDistribution[]
+  
+  @@index([documentCode])
+  @@index([status])
+  @@index([documentType])
+  @@index([category])
+}
+
+enum DocumentType {
+  FORM              // HGQS Forms
+  PROCEDURE         // Procedure Manual
+  WORK_INSTRUCTION  // Work Instructions
+  RECORD            // Quality Records
+  MANUAL            // Quality Manual
+  EXTERNAL          // External Documents
+  TEMPLATE          // Templates
+}
+
+enum DocumentStatus {
+  DRAFT           // Being prepared
+  REVIEW          // Under QMR review
+  PENDING_APPROVAL // Awaiting Director approval
+  APPROVED        // Approved and effective
+  OBSOLETE        // No longer in use
+  ARCHIVED        // Retained for records
+}
+
+model DocumentRevision {
+  id             Int      @id @default(autoincrement())
+  documentId     Int
+  revisionNumber Int
+  revisionDate   DateTime @default(now())
+  
+  changeSummary  String   @db.Text // What changed in this revision
+  reasonForChange String? @db.Text // Why the change was needed
+  
+  filePath       String   // Path to this revision's file
+  fileSize       Int?
+  
+  preparedBy     String
+  reviewedBy     String?
+  approvedBy     String?
+  
+  status         DocumentStatus @default(DRAFT)
+  
+  createdAt      DateTime @default(now())
+  
+  document       ManagedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  @@index([documentId])
+  @@index([revisionNumber])
+}
+
+model DocumentApproval {
+  id           Int      @id @default(autoincrement())
+  documentId   Int
+  revisionNumber Int?
+  
+  approverRole ApproverRole
+  approverName String
+  
+  action       ApprovalAction
+  comments     String?  @db.Text
+  
+  approvedAt   DateTime @default(now())
+  
+  document     ManagedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  @@index([documentId])
+  @@index([approverRole])
+}
+
+enum ApproverRole {
+  QMR       // Quality Management Representative
+  DIRECTOR  // Managing Director
+  OWNER     // Vessel Owner (if applicable)
+}
+
+enum ApprovalAction {
+  SUBMITTED    // Document submitted for review
+  REVIEWED     // QMR reviewed and approved
+  APPROVED     // Director approved
+  REJECTED     // Rejected with comments
+  REQUESTED_CHANGES // Changes requested
+}
+
+model DocumentDistribution {
+  id              Int      @id @default(autoincrement())
+  documentId      Int
+  
+  distributedTo   String   // Department or person
+  distributionMethod String? // Email, Print, Portal
+  distributedBy   String
+  
+  distributedAt   DateTime @default(now())
+  acknowledgedAt  DateTime?
+  
+  document        ManagedDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  @@index([documentId])
+}
+
+// ============================================
+// HGQS QMS MODELS (ISO 9001:2015)
+// ============================================
+
+// Risk Management (Clause 6.1.2)
+model RiskOpportunity {
+  id              Int      @id @default(autoincrement())
+  type            RiskType
+  
+  // Identification
+  source          String   // Source of risk/opportunity
+  description     String   @db.Text
+  
+  // Analysis
+  likelihood      RiskLevel? // HIGH, MEDIUM, LOW
+  impact          RiskLevel? // HIGH, MEDIUM, LOW
+  riskScore       Int?       // Calculated: likelihood x impact (1-9)
+  
+  // Treatment
+  actions         String   @db.Text // Actions to eliminate/minimize risk or pursue opportunity
+  responsiblePerson String?
+  targetDate      DateTime?
+  
+  // Review
+  status          RiskStatus @default(IDENTIFIED)
+  residualRisk    String?  @db.Text // After treatment
+  effectivenessReview String? @db.Text
+  reviewDate      DateTime?
+  
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([type])
+  @@index([status])
+}
+
+enum RiskType {
+  RISK
+  OPPORTUNITY
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum RiskStatus {
+  IDENTIFIED
+  UNDER_TREATMENT
+  COMPLETED
+  MONITORING
+}
+
+// Internal Audit System (Clause 9.2)
+model InternalAudit {
+  id              Int      @id @default(autoincrement())
+  auditNumber     String   @unique // e.g., IA-2024-001
+  
+  // Planning
+  auditDate       DateTime
+  auditType       AuditType
+  auditScope      String   @db.Text // Departments/processes to audit
+  
+  // Team
+  leadAuditor     String
+  auditors        String[] // Array of auditor names
+  auditee         String?  // Person/department being audited
+  
+  // Execution
+  checklist       String?  @db.Text // Audit checklist items (JSON or text)
+  findings        String?  @db.Text // Observations and findings
+  
+  // Results
+  status          AuditStatus @default(PLANNED)
+  nonConformities Int?     @default(0) // Count of NCs found
+  summary         String?  @db.Text
+  
+  // Follow-up
+  reportIssuedDate DateTime?
+  reportPath      String?  // Path to audit report PDF
+  
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  correctiveActions CorrectiveAction[]
+  
+  @@index([auditDate])
+  @@index([status])
+}
+
+enum AuditType {
+  INTERNAL       // Regular internal audit
+  EXTERNAL       // By customer or certification body
+  SURVEILLANCE   // Follow-up audit
+  SPECIAL        // Special purpose audit
+}
+
+enum AuditStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  REPORT_ISSUED
+  CLOSED
+}
+
+// Corrective & Preventive Action (Clause 10.2)
+model CorrectiveAction {
+  id              Int      @id @default(autoincrement())
+  carNumber       String   @unique // e.g., CAR-2024-001
+  
+  // Problem identification
+  source          CARSource
+  sourceRef       String?  // Reference to audit, complaint, etc.
+  problemDescription String @db.Text
+  detectedDate    DateTime @default(now())
+  detectedBy      String
+  
+  // Root cause analysis
+  rootCauseAnalysis String? @db.Text // Why did it happen?
+  category        CARCategory?
+  
+  // Corrective action
+  proposedAction  String?  @db.Text // What will be done?
+  responsiblePerson String?
+  targetDate      DateTime?
+  implementedDate DateTime?
+  
+  // Verification
+  status          CARStatus @default(OPEN)
+  effectivenessCheck String? @db.Text // Was it effective?
+  verifiedBy      String?
+  verifiedDate    DateTime?
+  
+  // Related
+  auditId         Int?
+  relatedAudit    InternalAudit? @relation(fields: [auditId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([status])
+  @@index([auditId])
+  @@index([category])
+}
+
+enum CARSource {
+  INTERNAL_AUDIT
+  EXTERNAL_AUDIT
+  CUSTOMER_COMPLAINT
+  CREW_COMPLAINT
+  MANAGEMENT_REVIEW
+  NONCONFORMING_PRODUCT
+  DATA_ANALYSIS
+  OTHER
+}
+
+enum CARCategory {
+  DOCUMENT_CONTROL
+  RECORD_KEEPING
+  TRAINING
+  COMPETENCE
+  COMMUNICATION
+  CUSTOMER_REQUIREMENTS
+  SUPPLIER_ISSUE
+  PROCESS_FAILURE
+  EQUIPMENT_FAILURE
+  OTHER
+}
+
+enum CARStatus {
+  OPEN
+  IN_PROGRESS
+  PENDING_VERIFICATION
+  VERIFIED_EFFECTIVE
+  VERIFIED_INEFFECTIVE
+  CLOSED
+}
+
+// Supplier/Subcontractor Management (Clause 8.4)
+model Supplier {
+  id              Int      @id @default(autoincrement())
+  code            String   @unique // Supplier code
+  name            String
+  type            SupplierType
+  
+  // Contact
+  address         String?  @db.Text
+  contactPerson   String?
+  phone           String?
+  email           String?
+  
+  // Products/Services provided
+  productsServices String  @db.Text
+  
+  // Evaluation
+  initialEvaluationScore Int? // Out of 100
+  initialEvaluationDate  DateTime?
+  status          SupplierStatus @default(APPROVED)
+  
+  // Notes
+  remarks         String?  @db.Text
+  
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  evaluations     SupplierEvaluation[]
+  purchaseOrders  PurchaseOrder[]
+  
+  @@index([status])
+  @@index([type])
+}
+
+enum SupplierType {
+  TICKETING_AGENT
+  CREW_HANDLING_AGENT
+  MEDICAL_CLINIC
+  TRAINING_CENTER
+  UNIFORM_SUPPLIER
+  GOODS_SUPPLIER
+  VISA_AGENT
+  OTHER
+}
+
+enum SupplierStatus {
+  APPROVED
+  CONDITIONAL
+  SUSPENDED
+  BLACKLISTED
+}
+
+model SupplierEvaluation {
+  id              Int      @id @default(autoincrement())
+  supplierId      Int
+  evaluationPeriod String  // e.g., "2024-Q1"
+  evaluationDate  DateTime @default(now())
+  
+  // Criteria (adjust as needed)
+  qualityScore    Int?     // 0-100
+  deliveryScore   Int?     // 0-100
+  priceScore      Int?     // 0-100
+  serviceScore    Int?     // 0-100
+  
+  totalScore      Int      // Average or weighted
+  remarks         String?  @db.Text
+  
+  evaluatedBy     String
+  approvedBy      String?
+  
+  supplier        Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([supplierId])
+  @@index([evaluationDate])
+}
+
+model PurchaseOrder {
+  id              Int      @id @default(autoincrement())
+  poNumber        String   @unique
+  supplierId      Int
+  
+  requestedBy     String
+  requestDate     DateTime @default(now())
+  
+  items           String   @db.Text // JSON array of items
+  totalAmount     Float?
+  currency        String?  @default("IDR")
+  
+  status          POStatus @default(PENDING)
+  deliveryDate    DateTime?
+  receivedDate    DateTime?
+  
+  remarks         String?  @db.Text
+  
+  supplier        Supplier @relation(fields: [supplierId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([supplierId])
+  @@index([status])
+}
+
+enum POStatus {
+  PENDING
+  APPROVED
+  ORDERED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+// Complaints Management (Annex C)
+model Complaint {
+  id              Int      @id @default(autoincrement())
+  complaintNumber String   @unique // e.g., COMP-2024-001
+  
+  // Source
+  complainantType ComplainantType
+  complainantName String?
+  complainantContact String?
+  
+  // Details
+  complaintDate   DateTime @default(now())
+  subject         String
+  description     String   @db.Text
+  category        ComplaintCategory?
+  
+  // Related to
+  relatedCrew     String?  // Crew name/code if applicable
+  relatedVessel   String?  // Vessel name if applicable
+  
+  // Resolution
+  status          ComplaintStatus @default(RECEIVED)
+  investigatedBy  String?
+  findings        String?  @db.Text
+  actionTaken     String?  @db.Text
+  resolvedDate    DateTime?
+  
+  // Follow-up
+  satisfactionRating Int?  // 1-5 stars
+  followUpNotes   String?  @db.Text
+  
+  receivedBy      String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([status])
+  @@index([complainantType])
+  @@index([category])
+}
+
+enum ComplainantType {
+  CUSTOMER        // Principal/vessel owner
+  SEAFARER        // Crew member
+  EMPLOYEE        // Office staff
+  MEDIA           // Media inquiry
+  AUTHORITY       // Government/flag state
+  PUBLIC          // General public
+  OTHER
+}
+
+enum ComplaintCategory {
+  SERVICE_QUALITY
+  DOCUMENT_DELAY
+  CREW_COMPETENCE
+  CREW_CONDUCT
+  COMMUNICATION
+  BILLING_PAYMENT
+  CONTRACT_DISPUTE
+  SAFETY_HEALTH
+  DISCRIMINATION
+  HARASSMENT
+  OTHER
+}
+
+enum ComplaintStatus {
+  RECEIVED
+  UNDER_INVESTIGATION
+  RESOLVED
+  CLOSED
+  ESCALATED
+}
+
+// Employee Management (Annex E + Employee Guideline)
+model Employee {
+  id              Int      @id @default(autoincrement())
+  employeeCode    String   @unique
+  
+  // Personal Info
+  fullName        String
+  dateOfBirth     DateTime?
+  placeOfBirth    String?
+  gender          String?
+  
+  // Contact
+  address         String?  @db.Text
+  phone           String?
+  email           String?
+  emergencyContact String? @db.Text // JSON: name, phone, relation
+  
+  // Employment
+  position        String   // Based on Job Descriptions
+  department      String
+  hireDate        DateTime
+  employmentType  EmploymentType
+  probationEndDate DateTime?
+  
+  status          EmployeeStatus @default(ACTIVE)
+  terminationDate DateTime?
+  terminationReason String? @db.Text
+  
+  // Documents
+  passportNumber  String?
+  idCardNumber    String?
+  medicalCertDate DateTime?
+  
+  // Bank (for payroll)
+  bankName        String?
+  accountNumber   String?
+  
+  // Competence
+  education       String?  @db.Text
+  qualifications  String?  @db.Text // Degrees, certifications
+  
+  supervisor      String?  // Immediate superior
+  
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  performanceAppraisals PerformanceAppraisal[]
+  leaves          Leave[]
+  disciplinaryActions DisciplinaryAction[]
+  trainings       EmployeeTraining[]
+  
+  @@index([status])
+  @@index([department])
+}
+
+enum EmploymentType {
+  REGULAR
+  PROBATIONARY
+  CASUAL
+  CONTRACT
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  ON_LEAVE
+  SUSPENDED
+  RESIGNED
+  TERMINATED
+}
+
+enum AppraisalRating {
+  OUTSTANDING      // 5
+  EXCEEDS_EXPECTATIONS // 4
+  MEETS_EXPECTATIONS   // 3
+  NEEDS_IMPROVEMENT    // 2
+  UNSATISFACTORY       // 1
+}
+
+enum OffenseCategory {
+  TARDINESS
+  ABSENCE
+  INSUBORDINATION
+  MISCONDUCT
+  POLICY_VIOLATION
+  SAFETY_VIOLATION
+  PERFORMANCE_ISSUE
+  OTHER
+}
+
+enum DisciplinaryActionType {
+  VERBAL_WARNING
+  WRITTEN_WARNING
+  SUSPENSION
+  DEMOTION
+  TERMINATION
+}
+
+enum TrainingStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+model PerformanceAppraisal {
+  id              Int      @id @default(autoincrement())
+  employeeId      Int
+  
+  appraisalPeriod String   // e.g., "2024 Annual"
+  appraisalDate   DateTime @default(now())
+  
+  // Scores (based on HCF-AD-06)
+  qualityOfWork   Int?     // 1-5
+  productivity    Int?     // 1-5
+  jobKnowledge    Int?     // 1-5
+  reliability     Int?     // 1-5
+  initiative      Int?     // 1-5
+  teamwork        Int?     // 1-5
+  
+  overallScore    Float?   // Average
+  overallRating   String?  // Excellent, Good, Satisfactory, Needs Improvement
+  
+  strengths       String?  @db.Text
+  areasForImprovement String? @db.Text
+  goals           String?  @db.Text // Goals for next period
+  
+  evaluatedBy     String   // Immediate superior
+  reviewedBy      String?  // QMR or Director
+  
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([employeeId])
+  @@index([appraisalDate])
+}
+
+model Leave {
+  id              Int      @id @default(autoincrement())
+  employeeId      Int
+  
+  leaveType       LeaveType
+  startDate       DateTime
+  endDate         DateTime
+  totalDays       Int
+  
+  reason          String?  @db.Text
+  status          LeaveStatus @default(PENDING)
+  
+  requestedDate   DateTime @default(now())
+  approvedBy      String?
+  approvedDate    DateTime?
+  rejectionReason String?  @db.Text
+  
+  // Supporting documents
+  medicalCertPath String?  // For sick leave
+  deathCertPath   String?  // For bereavement
+  
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([employeeId])
+  @@index([status])
+  @@index([leaveType])
+}
+
+enum LeaveType {
+  SICK_LEAVE
+  EMERGENCY_LEAVE
+  BEREAVEMENT_LEAVE
+  ANNUAL_LEAVE
+  UNPAID_LEAVE
+  MATERNITY_LEAVE
+  PATERNITY_LEAVE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model DisciplinaryAction {
+  id              Int      @id @default(autoincrement())
+  employeeId      Int
+  
+  incidentDate    DateTime
+  offenseCode     String?  // Reference to Table of Offenses
+  offense         String   @db.Text
+  offenseCategory String?  // From employee guideline table
+  
+  action          DisciplinaryActionType
+  penaltyDays     Int?     // For suspensions
+  
+  reportedBy      String
+  investigatedBy  String?
+  decidedBy       String   // QMR or Director
+  
+  employeeStatement String? @db.Text
+  findings        String?  @db.Text
+  
+  status          String   @default("ISSUED") // ISSUED, SERVED, APPEALED
+  
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([employeeId])
+  @@index([incidentDate])
+}
+
+model EmployeeTraining {
+  id              Int      @id @default(autoincrement())
+  employeeId      Int
+  
+  trainingTitle   String
+  trainingType    TrainingType
+  provider        String?  // Training center/instructor
+  
+  startDate       DateTime
+  endDate         DateTime?
+  duration        String?  // e.g., "16 hours", "3 days"
+  
+  status          TrainingStatus @default(SCHEDULED)
+  
+  certificatePath String?  // Path to certificate if completed
+  score           Int?     // If applicable
+  
+  remarks         String?  @db.Text
+  
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([employeeId])
+  @@index([trainingType])
+}
+
+enum TrainingType {
+  ISO_9001_AWARENESS
+  INTERNAL_AUDITOR
+  DOCUMENT_CONTROL
+  RECRUITMENT_PROCESS
+  MARITIME_LABOR_CONVENTION
+  SAFETY_TRAINING
+  COMPUTER_SKILLS
+  LANGUAGE_TRAINING
+  CUSTOMER_SERVICE
+  ON_THE_JOB
+  OTHER
+}
+
+// ============================================
+// SEAFARERS RIGHTS & CBA (HGD-SR - 46 pages)
+// ============================================
+
+model CollectiveBargainingAgreement {
+  id              Int      @id @default(autoincrement())
+  cbaCode         String   @unique
+  cbaTitle        String
+  
+  // Parties
+  shipOwner       String
+  union           String?
+  flagState       String
+  
+  // Validity
+  effectiveDate   DateTime
+  expirationDate  DateTime
+  
+  // Key terms
+  minimumWage     Float?
+  overtimeRate    Float?
+  leaveEntitlement Int?   // Days per month
+  repatriationCoverage String? @db.Text
+  
+  // MLC compliance
+  mlcCompliant    Boolean  @default(true)
+  mlcVersion      String?  // MLC 2006 as amended
+  
+  // Document
+  documentPath    String?
+  
+  status          CBAStatus @default(ACTIVE)
+  
+  // Relations
+  contracts       SeafarerContract[]
+  wageCalculations SeafarerWage[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([status])
+  @@index([expirationDate])
+}
+
+enum CBAStatus {
+  ACTIVE
+  EXPIRED
+  UNDER_NEGOTIATION
+  SUSPENDED
+}
+
+model SeafarerContract {
+  id              Int      @id @default(autoincrement())
+  contractNumber  String   @unique
+  
+  // Seafarer
+  crewId          Int
+  fullName        String
+  rank            String
+  nationality     String
+  
+  // Vessel
+  vesselId        Int?
+  vesselName      String
+  
+  // CBA
+  cbaId           Int
+  
+  // Contract terms
+  signOnDate      DateTime
+  signOffDate     DateTime
+  contractDuration Int     // Months
+  
+  basicWage       Float
+  fixedOvertime   Float?
+  otherAllowances String?  @db.Text // JSON
+  
+  totalWage       Float    // Basic + OT + allowances
+  currency        String   @default("USD")
+  
+  // Leave entitlement
+  leavePerMonth   Float    @default(2.5) // 2.5 days per month
+  accruedLeave    Float    @default(0)
+  
+  // Insurance & benefits
+  piClub          String?  // P&I Club
+  coverageAmount  Float?
+  
+  // MLC compliance
+  mlcCompliant    Boolean  @default(true)
+  seaServiceBook  String?  // Reference number
+  
+  // Status
+  status          ContractStatus @default(ACTIVE)
+  actualSignOffDate DateTime?
+  signOffReason   String?
+  
+  // Relations
+  crew            Crew              @relation("CrewContracts", fields: [crewId], references: [id], onDelete: Cascade)
+  cba             CollectiveBargainingAgreement @relation(fields: [cbaId], references: [id])
+  wages           SeafarerWage[]
+  leaveRecords    SeafarerLeave[]
+  grievances      SeafarerGrievance[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([crewId])
+  @@index([vesselId])
+  @@index([status])
+}
+
+enum ContractStatus {
+  ACTIVE
+  COMPLETED
+  TERMINATED
+  EXTENDED
+}
+
+model SeafarerWage {
+  id              Int      @id @default(autoincrement())
+  contractId      Int
+  cbaId           Int
+  
+  // Period
+  month           Int      // 1-12
+  year            Int
+  
+  // Wage components
+  basicWage       Float
+  fixedOvertime   Float    @default(0)
+  additionalOT    Float    @default(0)
+  allowances      Float    @default(0)
+  bonuses         Float    @default(0)
+  
+  // Deductions
+  advances        Float    @default(0)
+  allotments      Float    @default(0) // Family remittance
+  otherDeductions Float    @default(0)
+  
+  // Totals
+  grossWage       Float
+  totalDeductions Float
+  netWage         Float
+  
+  currency        String   @default("USD")
+  exchangeRate    Float?
+  
+  // Payment
+  paymentDate     DateTime?
+  paymentMethod   String?  // Bank transfer, cash, etc.
+  paymentStatus   PaymentStatus @default(PENDING)
+  
+  // Relations
+  contract        SeafarerContract @relation(fields: [contractId], references: [id])
+  cba             CollectiveBargainingAgreement @relation(fields: [cbaId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([contractId])
+  @@index([paymentStatus])
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSED
+  PAID
+  FAILED
+}
+
+model SeafarerLeave {
+  id              Int      @id @default(autoincrement())
+  contractId      Int
+  
+  leaveType       SeafarerLeaveType
+  startDate       DateTime
+  endDate         DateTime
+  totalDays       Float
+  
+  // Accrual tracking
+  accruedBefore   Float
+  usedDays        Float
+  accruedAfter    Float
+  
+  reason          String?  @db.Text
+  approvedBy      String?
+  
+  status          LeaveStatus @default(APPROVED)
+  
+  contract        SeafarerContract @relation(fields: [contractId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  
+  @@index([contractId])
+}
+
+enum SeafarerLeaveType {
+  ANNUAL_LEAVE
+  SHORE_LEAVE
+  MEDICAL_LEAVE
+  COMPASSIONATE_LEAVE
+  PAID_LEAVE
+}
+
+model SeafarerGrievance {
+  id              Int      @id @default(autoincrement())
+  grievanceNumber String   @unique
+  
+  contractId      Int
+  seafarerName    String
+  vesselName      String
+  
+  // MLC 2006 Reg 5.1.5
+  grievanceType   GrievanceType
+  description     String   @db.Text
+  
+  filedDate       DateTime @default(now())
+  
+  // Investigation
+  investigatedBy  String?
+  investigationNotes String? @db.Text
+  
+  // Resolution
+  resolution      String?  @db.Text
+  resolvedDate    DateTime?
+  
+  status          GrievanceStatus @default(FILED)
+  
+  // Escalation
+  escalatedTo     String?  // ITF, Flag state, etc.
+  escalationDate  DateTime?
+  
+  contract        SeafarerContract @relation(fields: [contractId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([contractId])
+  @@index([status])
+}
+
+enum GrievanceType {
+  WAGE_DISPUTE
+  CONTRACT_VIOLATION
+  WORKING_CONDITIONS
+  HARASSMENT
+  DISCRIMINATION
+  HEALTH_SAFETY
+  REPATRIATION
+  LEAVE_ENTITLEMENT
+  OTHER
+}
+
+enum GrievanceStatus {
+  FILED
+  UNDER_INVESTIGATION
+  RESOLVED
+  ESCALATED
+  CLOSED
+}
+
+
+
+
+
