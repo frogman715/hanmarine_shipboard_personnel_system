@@ -1,0 +1,115 @@
+﻿
+> hanmarine-shipboard-personnel-system@0.1.0 build
+> next build
+
+npm :  ΓÜá Disabling SWC Minifer will not be an option in the next major version. Please 
+report any issues you may be experiencing to https://github.com/vercel/next.js/issues
+At line:1 char:1
++ npm run build 2>&1 | Out-File -FilePath build_output.txt -Encoding UT ...
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( ΓÜá Disabling .../next.js/issues:String) [],  
+   RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Γû▓ Next.js 14.2.5
+  - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/17) ...
+   Generating static pages (4/17) 
+   Generating static pages (8/17) 
+Failed to fetch applications: n [Error]: Dynamic server usage: no-store fetch 
+http://localhost:3000/api/applications /applications
+    at C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.next\serv
+er\chunks\948.js:1:47173
+    at C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.next\serv
+er\chunks\948.js:1:54547
+    at t.NoopContextManager.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_
+personnel_system\.next\server\chunks\948.js:1:9011)
+    at c.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.n
+ext\server\chunks\948.js:1:3144)
+    at t.NoopTracer.startActiveSpan (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboa
+rd_personnel_system\.next\server\chunks\948.js:1:18259)
+    at t.ProxyTracer.startActiveSpan (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipbo
+ard_personnel_system\.next\server\chunks\948.js:1:18794)
+    at C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.next\serv
+er\chunks\948.js:1:54071
+    at t.NoopContextManager.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_
+personnel_system\.next\server\chunks\948.js:1:9011)
+    at c.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.n
+ext\server\chunks\948.js:1:3144)
+    at _.trace (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.
+next\server\chunks\948.js:1:54024) {
+  description: 'no-store fetch http://localhost:3000/api/applications /applications',
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Failed to fetch applications: n [Error]: Dynamic server usage: no-store fetch 
+http://localhost:3000/api/applications /applications
+    at C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.next\serv
+er\chunks\948.js:1:47173
+    at C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.next\serv
+er\chunks\948.js:1:54547
+    at t.NoopContextManager.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_
+personnel_system\.next\server\chunks\948.js:1:9011)
+    at c.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.n
+ext\server\chunks\948.js:1:3144)
+    at t.NoopTracer.startActiveSpan (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboa
+rd_personnel_system\.next\server\chunks\948.js:1:18259)
+    at t.ProxyTracer.startActiveSpan (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipbo
+ard_personnel_system\.next\server\chunks\948.js:1:18794)
+    at C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.next\serv
+er\chunks\948.js:1:54071
+    at t.NoopContextManager.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_
+personnel_system\.next\server\chunks\948.js:1:9011)
+    at c.with (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.n
+ext\server\chunks\948.js:1:3144)
+    at _.trace (C:\Users\askal\Desktop\hanmarine_apps\hanmarine_shipboard_personnel_system\.
+next\server\chunks\948.js:1:54024) {
+  description: 'no-store fetch http://localhost:3000/api/applications /applications',
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (12/17) 
+ Γ£ô Generating static pages (17/17)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /                                    185 B          94.7 kB
+Γö£ Γùï /_not-found                          901 B          88.5 kB
+Γö£ ╞Æ /api/applications                    0 B                0 B
+Γö£ ╞Æ /api/certificates                    0 B                0 B
+Γö£ ╞Æ /api/checklists                      0 B                0 B
+Γö£ ╞Æ /api/crew                            0 B                0 B
+Γö£ ╞Æ /api/crew/[id]/evaluation            0 B                0 B
+Γö£ ╞Æ /api/crew/[id]/repatriation          0 B                0 B
+Γö£ ╞Æ /api/crew/seed-test-contracts        0 B                0 B
+Γö£ ╞Æ /api/forms                           0 B                0 B
+Γö£ ╞Æ /api/joining-instructions            0 B                0 B
+Γö£ ╞Æ /api/sea-service                     0 B                0 B
+Γö£ ╞Æ /applications                        185 B          94.7 kB
+Γö£ ╞Æ /applications/[id]                   1.18 kB        88.8 kB
+Γö£ Γùï /applications/form                   2.51 kB        90.2 kB
+Γö£ Γùï /applications/new                    1.06 kB        88.7 kB
+Γö£ Γùï /crew                                1.75 kB        89.4 kB
+Γö£ ╞Æ /crew/[id]                           1.46 kB        89.1 kB
+Γö£ ╞Æ /crew/[id]/document-checklist        2.29 kB        89.9 kB
+Γö£ ╞Æ /crew/[id]/edit                      1.93 kB        89.6 kB
+Γö£ ╞Æ /crew/[id]/evaluation                846 B          88.5 kB
+Γö£ ╞Æ /crew/[id]/joining-instruction       2.37 kB          90 kB
+Γö£ ╞Æ /crew/[id]/repatriation              896 B          88.5 kB
+Γö£ ╞Æ /crew/[id]/sea-service               2.37 kB          90 kB
+Γöö Γùï /dashboard                           798 B          88.4 kB
++ First Load JS shared by all            87.6 kB
+  Γö£ chunks/23-0c40d6df9b62e9bb.js        31.8 kB
+  Γö£ chunks/fd9d1056-62aaf4b921c84028.js  54 kB
+  Γöö other shared chunks (total)          1.92 kB
+
+
+╞Æ Middleware                             26.7 kB
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+
