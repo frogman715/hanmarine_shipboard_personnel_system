@@ -1,5 +1,4 @@
-import MainNavigation from '../components/MainNavigation';
-import '../components/MainNavigation.css';
+import ConditionalLayout from '../components/ConditionalLayout';
 import './globals.css';
 
 export const metadata = {
@@ -11,10 +10,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body style={{ margin: 0, background: '#10182b', fontFamily: 'system-ui, sans-serif' }}>
-        <MainNavigation />
-        <div style={{ marginLeft: 260, minHeight: '100vh' }}>
+        <ConditionalLayout>
           {children}
-        </div>
+        </ConditionalLayout>
       </body>
     </html>
   );

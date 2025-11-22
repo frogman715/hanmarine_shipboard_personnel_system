@@ -78,7 +78,7 @@ export default function HomePage() {
 
           <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap', marginTop: 40 }}>
             <Link 
-              href="/dashboard" 
+              href="/login" 
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -95,7 +95,7 @@ export default function HomePage() {
                 border: 'none'
               }}
             >
-              Get Started <FaArrowRight />
+              🔐 Login to System <FaArrowRight />
             </Link>
             <a 
               href="#features" 

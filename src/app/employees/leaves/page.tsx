@@ -5,8 +5,8 @@ import Breadcrumb from '../../../components/Breadcrumb';
 import './leaves.css';
 
 export default function LeavesPage() {
-  const [leaves, setLeaves] = useState([]);
-  const [employees, setEmployees] = useState([]);
+  const [leaves, setLeaves] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -113,7 +113,7 @@ export default function LeavesPage() {
   };
 
   const getEmployeeName = (employeeId: string) => {
-    const employee = employees.find((e: any) => e.id === employeeId);
+    const employee: any = employees.find((e: any) => e.id === employeeId);
     return employee ? employee.fullName : 'Unknown';
   };
 

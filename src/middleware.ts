@@ -85,6 +85,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
+  // Root path - redirect to login if not authenticated, otherwise to dashboard
+  if (pathname === '/') {
+    const userSession = request.cookies.get('user_session');
+    if (!userSession) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+  
   // Check if user is authenticated
   const userSession = request.cookies.get('user_session');
   
