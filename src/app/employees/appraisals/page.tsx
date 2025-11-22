@@ -5,8 +5,8 @@ import Breadcrumb from '../../../components/Breadcrumb';
 import './appraisals.css';
 
 export default function AppraisalsPage() {
-  const [appraisals, setAppraisals] = useState([]);
-  const [employees, setEmployees] = useState([]);
+  const [appraisals, setAppraisals] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -112,7 +112,7 @@ export default function AppraisalsPage() {
   };
 
   const getEmployeeName = (employeeId: string) => {
-    const employee = employees.find((e: any) => e.id === employeeId);
+    const employee: any = employees.find((e: any) => e.id === employeeId);
     return employee ? employee.fullName : 'Unknown';
   };
 

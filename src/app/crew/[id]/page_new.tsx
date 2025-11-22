@@ -88,14 +88,14 @@ export default async function CrewDetail({ params }: Props) {
                   <span className="meta-value">{crew.vessel || 'Not assigned'}</span>
                 </div>
                 <div className="meta-item">
-                  <span className="icon">📧</span>
-                  <span className="meta-label">Email:</span>
-                  <span className="meta-value">{crew.contactEmail || 'Not provided'}</span>
+                  <span className="icon">📱</span>
+                  <span className="meta-label">Mobile:</span>
+                  <span className="meta-value">{crew.phoneMobile || 'Not provided'}</span>
                 </div>
                 <div className="meta-item">
-                  <span className="icon">📱</span>
-                  <span className="meta-label">Phone:</span>
-                  <span className="meta-value">{crew.contactPhone || 'Not provided'}</span>
+                  <span className="icon">☎️</span>
+                  <span className="meta-label">Home Phone:</span>
+                  <span className="meta-value">{crew.phoneHome || 'Not provided'}</span>
                 </div>
               </div>
               
