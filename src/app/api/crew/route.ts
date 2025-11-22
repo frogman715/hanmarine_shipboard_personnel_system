@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
     if (!fullName || !rank) {
       return NextResponse.json(
-        { error: 'Nama lengkap dan rank wajib diisi' },
+        { error: 'Full name and rank are required fields' },
         { status: 400 },
       )
     }
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error(err)
     return NextResponse.json(
-      { error: 'Terjadi kesalahan saat menyimpan crew' },
+      { error: 'An error occurred while saving crew data' },
       { status: 500 },
     )
   }
