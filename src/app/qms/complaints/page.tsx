@@ -5,7 +5,7 @@ import Breadcrumb from '../../../components/Breadcrumb';
 import './complaints.css';
 
 export default function ComplaintsPage() {
-  const [complaints, setComplaints] = useState([]);
+  const [complaints, setComplaints] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [filterType, setFilterType] = useState('ALL');
@@ -37,7 +37,7 @@ export default function ComplaintsPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await fetch('/api/qms/complaints', {
@@ -65,8 +65,8 @@ export default function ComplaintsPage() {
     }
   };
 
-  const getStatusBadge = (status) => {
-    const badges = {
+  const getStatusBadge = (status: string) => {
+    const badges: any = {
       RECEIVED: { emoji: '📨', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
       UNDER_INVESTIGATION: { emoji: '🔍', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
       RESOLVED: { emoji: '✅', color: '#10b981', bg: 'rgba(16, 185, 129, 0.1)' },
@@ -80,8 +80,8 @@ export default function ComplaintsPage() {
     );
   };
 
-  const getPriorityBadge = (priority) => {
-    const badges = {
+  const getPriorityBadge = (priority: string) => {
+    const badges: any = {
       LOW: { emoji: '🟢', color: '#10b981' },
       MEDIUM: { emoji: '🟡', color: '#f59e0b' },
       HIGH: { emoji: '🔴', color: '#dc2626' }
@@ -94,7 +94,7 @@ export default function ComplaintsPage() {
     );
   };
 
-  const getTypeTag = (type) => {
+  const getTypeTag = (type: string) => {
     return (
       <span className="type-tag">
         {type.replace(/_/g, ' ')}
