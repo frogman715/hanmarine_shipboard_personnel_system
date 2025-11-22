@@ -12,16 +12,10 @@ export async function POST(request: NextRequest) {
         fullName: data.fullName,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
         placeOfBirth: data.placeOfBirth,
-        nationality: data.nationality,
         religion: data.religion,
-        maritalStatus: data.maritalStatus,
         address: data.address,
-        phone: data.phone,
-        email: data.email,
-        emergencyContact: data.emergencyContact,
-        emergencyPhone: data.emergencyPhone,
+        phoneMobile: data.phone,
         rank: data.rankApplied,
-        department: data.department,
         status: 'AVAILABLE',
       },
     });
@@ -33,10 +27,10 @@ export async function POST(request: NextRequest) {
       return prisma.certificate.create({
         data: {
           crewId: crew.id,
-          certificateName: key.replace(/([A-Z])/g, ' $1').trim().toUpperCase(),
-          certificateNumber: doc.number,
+          type: key.replace(/([A-Z])/g, ' $1').trim().toUpperCase(),
           issueDate: new Date(),
           expiryDate: doc.expiry ? new Date(doc.expiry) : null,
+          remarks: doc.number ? `Number: ${doc.number}` : undefined,
         },
       });
     });
@@ -44,12 +38,12 @@ export async function POST(request: NextRequest) {
     await Promise.all(certificatePromises.filter(p => p !== null));
 
     // Create application
-    const application = await prisma.application.create({
+    const application = await prisma.employmentApplication.create({
       data: {
         crewId: crew.id,
         appliedRank: data.rankApplied,
         notes: `Application for ${data.rankApplied} position`,
-        status: 'pending',
+        status: 'APPLIED',
       },
     });
 
@@ -70,7 +64,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Update application with metadata
-    await prisma.application.update({
+    await prisma.employmentApplication.update({
       where: { id: application.id },
       data: {
         notes: JSON.stringify(applicationMetadata),
