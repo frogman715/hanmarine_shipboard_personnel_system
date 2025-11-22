@@ -140,25 +140,46 @@ graph LR
 
 ### Prerequisites
 
-- **Node.js**: 18.x or higher
+- **Node.js**: 18.x or 20.x LTS (⚠️ **NOT** v24.x - incompatible)
 - **npm**: 9.x or higher
 - **PostgreSQL**: 13+ running locally or remotely
 - **RAM**: Minimum 2GB available
 - **Storage**: Minimum 1GB free space
 
-### Installation Steps
+### ⚡ Quick Setup (Automated)
+
+**Having issues after pulling from GitHub?** Run our automated setup script:
+
+```bash
+# Linux/macOS/WSL:
+./fix-prisma-setup.sh
+
+# Windows PowerShell:
+.\fix-prisma-setup.ps1
+```
+
+This script will:
+- ✅ Check Node.js version compatibility
+- ✅ Remove problematic config files (if any)
+- ✅ Verify Prisma schema
+- ✅ Generate Prisma Client
+- ✅ Create .env template if needed
+
+📚 **For detailed setup instructions**, see **[SETUP_GUIDE.md](./SETUP_GUIDE.md)**
+
+### Installation Steps (Manual)
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/frogman715/hanmarine_shipboard_personnel_system.git
 cd hanmarine_shipboard_personnel_system
 
-# 2. Install dependencies
+# 2. Install dependencies (automatically runs prisma generate)
 npm install
 
 # 3. Configure environment variables
 # Create .env file in the root directory
-cp .env.example .env
+touch .env
 
 # Edit .env and set your database connection:
 # DATABASE_URL="postgresql://user:password@localhost:5433/hanmarine?schema=public"
@@ -1480,6 +1501,28 @@ VACUUM ANALYZE;
 ---
 
 ## 🆘 Troubleshooting
+
+### 🚨 Prisma Configuration Error: "Failed to parse syntax of config file"
+
+**Error**: `Failed to parse syntax of config file at prisma.config.js`
+
+**Cause**: You have a `prisma.config.js` or `prisma.config.ts` file that shouldn't exist.
+
+**Solution**:
+```bash
+# Run the automated fix script:
+./fix-prisma-setup.sh  # Linux/macOS/WSL
+.\fix-prisma-setup.ps1  # Windows PowerShell
+
+# Or manually:
+rm prisma.config.js prisma.config.ts *.bak  # Delete problematic files
+npm install                                  # Reinstall dependencies
+npx prisma generate                          # Regenerate Prisma Client
+```
+
+**Note**: This project uses the standard Prisma setup. Only `prisma/schema.prisma` is needed.
+
+📚 **See [SETUP_GUIDE.md](./SETUP_GUIDE.md) for detailed troubleshooting.**
 
 ### Server won't start
 
