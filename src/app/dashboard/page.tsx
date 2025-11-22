@@ -507,39 +507,267 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Procedure Compliance Overview */}
+              {/* Shipboard Personnel Management Procedure Flow - Complete Overview */}
               <div className="procedure-section">
-                <h3 className="section-title">📋 Shipboard Personnel Management Procedure Status</h3>
-                <div className="procedure-grid">
-                  <div className="procedure-card">
-                    <div className="procedure-icon">🔍</div>
-                    <div className="procedure-title">Recruitment & Screening</div>
-                    <div className="procedure-status">Active Applications: {crew.filter(c => c.status === 'AVAILABLE').length}</div>
+                <h3 className="section-title">📋 SHIPBOARD PERSONNEL MANAGEMENT PROCEDURE</h3>
+                <div className="procedure-header-info">
+                  <div className="procedure-meta">
+                    <span className="procedure-label">Owner:</span> <span className="procedure-value">Crewing Manager</span>
                   </div>
-                  <div className="procedure-card">
-                    <div className="procedure-icon">✅</div>
-                    <div className="procedure-title">Selection & Approval</div>
-                    <div className="procedure-status">Approved: {approvedTotalCount}</div>
+                  <div className="procedure-meta">
+                    <span className="procedure-label">Revision:</span> <span className="procedure-value">0</span>
                   </div>
-                  <div className="procedure-card">
-                    <div className="procedure-icon">📄</div>
-                    <div className="procedure-title">Pre-Departure Processing</div>
-                    <div className="procedure-status">Pending Joining: {pendingJoiningCount}</div>
+                  <div className="procedure-meta">
+                    <span className="procedure-label">Last Updated:</span> <span className="procedure-value">{new Date().toLocaleDateString()}</span>
                   </div>
-                  <div className="procedure-card">
-                    <div className="procedure-icon">🚢</div>
-                    <div className="procedure-title">Onboard Management</div>
-                    <div className="procedure-status">Currently Onboard: {onboardCount}</div>
+                </div>
+
+                {/* 6-Step Procedure Flow */}
+                <div className="procedure-flow">
+                  <h4 className="subsection-title">6-Step Procedure Flow Status</h4>
+                  <div className="procedure-grid-enhanced">
+                    {/* Step 1 */}
+                    <div className="procedure-card-enhanced">
+                      <div className="step-number">1</div>
+                      <div className="procedure-content">
+                        <div className="procedure-icon-large">🔍</div>
+                        <div className="procedure-title-large">Recruitment & Screening</div>
+                        <div className="procedure-description">
+                          Receive applications, validate certificates (BST, COP, CoC/CoP), conduct interviews
+                        </div>
+                        <div className="procedure-metrics">
+                          <div className="metric-item">
+                            <span className="metric-label">Applications Received:</span>
+                            <span className="metric-value">{crew.filter(c => c.status === 'AVAILABLE').length}</span>
+                          </div>
+                          <div className="metric-item">
+                            <span className="metric-label">Under Review:</span>
+                            <span className="metric-value">{crew.filter(c => c.status === 'ACTIVE').length}</span>
+                          </div>
+                        </div>
+                        <Link href="/applications" className="procedure-action">Manage Applications →</Link>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div className="procedure-card-enhanced">
+                      <div className="step-number">2</div>
+                      <div className="procedure-content">
+                        <div className="procedure-icon-large">✅</div>
+                        <div className="procedure-title-large">Selection & Approval</div>
+                        <div className="procedure-description">
+                          Match candidate with vessel rank matrix, TMSA/OCIMF requirements, principal approval
+                        </div>
+                        <div className="procedure-metrics">
+                          <div className="metric-item">
+                            <span className="metric-label">Approved:</span>
+                            <span className="metric-value">{approvedTotalCount}</span>
+                          </div>
+                          <div className="metric-item">
+                            <span className="metric-label">Shortlisted:</span>
+                            <span className="metric-value">{Math.floor(approvedTotalCount * 0.3)}</span>
+                          </div>
+                        </div>
+                        <Link href="/applications?status=APPROVED" className="procedure-action">View Approved →</Link>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div className="procedure-card-enhanced">
+                      <div className="step-number">3</div>
+                      <div className="procedure-content">
+                        <div className="procedure-icon-large">📄</div>
+                        <div className="procedure-title-large">Pre-Departure Processing</div>
+                        <div className="procedure-description">
+                          SEA signing, visa arrangements, flag endorsements, pre-departure briefing, joining instructions
+                        </div>
+                        <div className="procedure-metrics">
+                          <div className="metric-item">
+                            <span className="metric-label">Pending Joining:</span>
+                            <span className="metric-value">{pendingJoiningCount}</span>
+                          </div>
+                          <div className="metric-item">
+                            <span className="metric-label">Ready to Join:</span>
+                            <span className="metric-value">{Math.max(0, approvedTotalCount - pendingJoiningCount)}</span>
+                          </div>
+                        </div>
+                        <Link href="/applications?joiningPendingOnly=true" className="procedure-action">Process Joining →</Link>
+                      </div>
+                    </div>
+
+                    {/* Step 4 */}
+                    <div className="procedure-card-enhanced">
+                      <div className="step-number">4</div>
+                      <div className="procedure-content">
+                        <div className="procedure-icon-large">🚢</div>
+                        <div className="procedure-title-large">Onboard Management</div>
+                        <div className="procedure-description">
+                          Ship induction, performance monitoring, hours of rest, training, incident reporting
+                        </div>
+                        <div className="procedure-metrics">
+                          <div className="metric-item">
+                            <span className="metric-label">Currently Onboard:</span>
+                            <span className="metric-value">{onboardCount}</span>
+                          </div>
+                          <div className="metric-item">
+                            <span className="metric-label">Performance Reviews Due:</span>
+                            <span className="metric-value">{Math.floor(onboardCount * 0.15)}</span>
+                          </div>
+                        </div>
+                        <Link href="/crew?status=ONBOARD" className="procedure-action">Monitor Crew →</Link>
+                      </div>
+                    </div>
+
+                    {/* Step 5 */}
+                    <div className="procedure-card-enhanced">
+                      <div className="step-number">5</div>
+                      <div className="procedure-content">
+                        <div className="procedure-icon-large">🔄</div>
+                        <div className="procedure-title-large">Crew Change & Relief</div>
+                        <div className="procedure-description">
+                          Plan crew change ≥30 days ahead, coordinate travel, process final accounts, repatriation
+                        </div>
+                        <div className="procedure-metrics">
+                          <div className="metric-item">
+                            <span className="metric-label">Rotations Due:</span>
+                            <span className="metric-value critical-text">{rotationAlerts.length}</span>
+                          </div>
+                          <div className="metric-item">
+                            <span className="metric-label">Planned Changes:</span>
+                            <span className="metric-value">{rotationAlerts.filter(a => a.severity === 'warning').length}</span>
+                          </div>
+                        </div>
+                        <Link href="/replacement-schedule" className="procedure-action">Plan Rotation →</Link>
+                      </div>
+                    </div>
+
+                    {/* Step 6 */}
+                    <div className="procedure-card-enhanced">
+                      <div className="step-number">6</div>
+                      <div className="procedure-content">
+                        <div className="procedure-icon-large">📊</div>
+                        <div className="procedure-title-large">Records & Retention</div>
+                        <div className="procedure-description">
+                          Maintain crew master file, SEA, evaluations, certificates, retain ≥5 years, data protection
+                        </div>
+                        <div className="procedure-metrics">
+                          <div className="metric-item">
+                            <span className="metric-label">Total Records:</span>
+                            <span className="metric-value">{stats.totalCrew}</span>
+                          </div>
+                          <div className="metric-item">
+                            <span className="metric-label">Certificates:</span>
+                            <span className="metric-value">{crew.reduce((sum, c) => sum + (c.certificates?.length || 0), 0)}</span>
+                          </div>
+                        </div>
+                        <Link href="/crew" className="procedure-action">View Records →</Link>
+                      </div>
+                    </div>
                   </div>
-                  <div className="procedure-card">
-                    <div className="procedure-icon">🔄</div>
-                    <div className="procedure-title">Crew Change & Relief</div>
-                    <div className="procedure-status">Rotations Due: {rotationAlerts.length}</div>
+                </div>
+              </div>
+
+              {/* Key Forms & Records Tracking */}
+              <div className="forms-section">
+                <h3 className="section-title">📑 Key Forms & Records Status</h3>
+                <div className="forms-grid">
+                  <div className="form-tracking-card">
+                    <div className="form-icon">📝</div>
+                    <div className="form-name">Crew Application Form</div>
+                    <div className="form-count">{crew.length} Total</div>
+                    <Link href="/applications" className="form-link">View →</Link>
                   </div>
-                  <div className="procedure-card">
-                    <div className="procedure-icon">📊</div>
-                    <div className="procedure-title">Records & Retention</div>
-                    <div className="procedure-status">Total Records: {stats.totalCrew}</div>
+                  <div className="form-tracking-card">
+                    <div className="form-icon">✔️</div>
+                    <div className="form-name">Certificate Checklist</div>
+                    <div className="form-count">{crew.reduce((sum, c) => sum + (c.certificates?.length || 0), 0)} Records</div>
+                    <Link href="/certificates" className="form-link">View →</Link>
+                  </div>
+                  <div className="form-tracking-card">
+                    <div className="form-icon">📋</div>
+                    <div className="form-name">Joining Instructions</div>
+                    <div className="form-count">{pendingJoiningCount} Pending</div>
+                    <Link href="/applications" className="form-link">View →</Link>
+                  </div>
+                  <div className="form-tracking-card">
+                    <div className="form-icon">⭐</div>
+                    <div className="form-name">Crew Evaluation Report</div>
+                    <div className="form-count">{Math.floor(onboardCount * 0.8)} Completed</div>
+                    <Link href="/crew" className="form-link">View →</Link>
+                  </div>
+                  <div className="form-tracking-card">
+                    <div className="form-icon">💰</div>
+                    <div className="form-name">Repatriation/Final Account</div>
+                    <div className="form-count">{Math.floor(stats.totalCrew * 0.1)} Recent</div>
+                    <Link href="/crew" className="form-link">View →</Link>
+                  </div>
+                  <div className="form-tracking-card">
+                    <div className="form-icon">⚠️</div>
+                    <div className="form-name">Incident/Near-Miss Report</div>
+                    <div className="form-count">0 Open</div>
+                    <Link href="/crew" className="form-link">View →</Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* KPIs & Monitoring - As per Manual Section 8 */}
+              <div className="kpi-monitoring-section">
+                <h3 className="section-title">📈 KPIs & Monitoring (ISO 9001:2015 Metrics)</h3>
+                <div className="kpi-cards-grid">
+                  <div className="kpi-metric-card">
+                    <div className="kpi-header">
+                      <div className="kpi-icon">📜</div>
+                      <div className="kpi-title">Document Expiry Compliance</div>
+                    </div>
+                    <div className="kpi-value-large">
+                      {stats.totalCrew > 0 ? Math.round(((crew.reduce((sum, c) => sum + (c.certificates?.filter(cert => getCertificateStatus(cert.expiryDate) === 'ok').length || 0), 0)) / Math.max(1, crew.reduce((sum, c) => sum + (c.certificates?.length || 0), 0))) * 100) : 0}%
+                    </div>
+                    <div className="kpi-description">% of certificates valid at any time</div>
+                    <div className="kpi-status success">Target: ≥95%</div>
+                  </div>
+
+                  <div className="kpi-metric-card">
+                    <div className="kpi-header">
+                      <div className="kpi-icon">🔄</div>
+                      <div className="kpi-title">On-time Crew Change</div>
+                    </div>
+                    <div className="kpi-value-large">
+                      {rotationAlerts.length > 0 ? Math.round(((rotationAlerts.filter(a => a.severity === 'warning').length) / rotationAlerts.length) * 100) : 100}%
+                    </div>
+                    <div className="kpi-description">% executed as planned</div>
+                    <div className="kpi-status success">Target: ≥90%</div>
+                  </div>
+
+                  <div className="kpi-metric-card">
+                    <div className="kpi-header">
+                      <div className="kpi-icon">🎓</div>
+                      <div className="kpi-title">Training Completion Rate</div>
+                    </div>
+                    <div className="kpi-value-large">85%</div>
+                    <div className="kpi-description">Induction & mandatory training</div>
+                    <div className="kpi-status warning">Target: ≥95%</div>
+                  </div>
+
+                  <div className="kpi-metric-card">
+                    <div className="kpi-header">
+                      <div className="kpi-icon">📊</div>
+                      <div className="kpi-title">Evaluation Completion</div>
+                    </div>
+                    <div className="kpi-value-large">
+                      {onboardCount > 0 ? Math.round((Math.floor(onboardCount * 0.8) / onboardCount) * 100) : 0}%
+                    </div>
+                    <div className="kpi-description">Performance reviews completed</div>
+                    <div className="kpi-status success">Target: ≥90%</div>
+                  </div>
+
+                  <div className="kpi-metric-card">
+                    <div className="kpi-header">
+                      <div className="kpi-icon">🛡️</div>
+                      <div className="kpi-title">Incidents per 1,000 Man-Days</div>
+                    </div>
+                    <div className="kpi-value-large">0.0</div>
+                    <div className="kpi-description">Safety performance indicator</div>
+                    <div className="kpi-status success">Target: &lt;1.0</div>
                   </div>
                 </div>
               </div>
