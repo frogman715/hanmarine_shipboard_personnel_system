@@ -19,7 +19,7 @@ export async function GET() {
     const suppliersWithEvaluation = suppliers.map(supplier => ({
       ...supplier,
       lastEvaluationDate: supplier.evaluations[0]?.evaluationDate || null,
-      lastEvaluationScore: supplier.evaluations[0]?.score || null
+      lastEvaluationScore: supplier.evaluations[0]?.totalScore || null
     }));
 
     return NextResponse.json(suppliersWithEvaluation);
@@ -50,16 +50,16 @@ export async function POST(request: Request) {
 
     const supplier = await prisma.supplier.create({
       data: {
+        code: body.code || `SUP-${Date.now()}`,
         name,
         type,
         contactPerson: contactPerson || null,
         email: email || null,
         phone: phone || null,
         address: address || null,
-        services: services || null,
-        registrationNumber: registrationNumber || null,
-        taxId: taxId || null,
-        status: 'APPROVED'
+        productsServices: services || '',
+        status: 'APPROVED',
+        createdBy: body.createdBy || 'System'
       }
     });
 

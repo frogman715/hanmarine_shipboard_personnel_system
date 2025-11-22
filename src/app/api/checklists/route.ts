@@ -97,13 +97,13 @@ export async function POST(req: Request) {
         trainingCertsOk: checklistData?.basicSafety ?? trainingCertsOk ?? null,
         covidVaccineOk: checklistData?.covidVaccine ?? covidVaccineOk ?? null,
         remarks: checklistData?.remarks ?? remarks ?? null,
-        procedure: template ? {
+        procedure: (template ? {
           templateCode: template.code,
           templateName: template.name,
           items: checklistData || {},
           completedAt: new Date().toISOString(),
           completedBy: user.fullName
-        } : null,
+        } : null) as any,
       },
     })
 

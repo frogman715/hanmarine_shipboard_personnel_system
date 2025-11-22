@@ -35,21 +35,22 @@ export async function POST(request: Request) {
       data: {
         contractNumber: body.contractNumber,
         crewId: body.crewId,
+        fullName: body.fullName || 'TBD',
+        nationality: body.nationality || 'TBD',
         vesselName: body.vesselName,
         rank: body.rank,
+        cbaId: body.cbaId || 1, // Default CBA ID, should be provided
         signOnDate: new Date(body.signOnDate),
         signOffDate: new Date(body.signOffDate),
         contractDuration: months,
-        basicWage: body.basicWage ? parseFloat(body.basicWage) : null,
+        basicWage: body.basicWage ? parseFloat(body.basicWage) : 0,
         fixedOvertime: body.fixedOvertime ? parseFloat(body.fixedOvertime) : null,
-        totalWage: body.totalWage ? parseFloat(body.totalWage) : null,
+        totalWage: body.totalWage ? parseFloat(body.totalWage) : (body.basicWage ? parseFloat(body.basicWage) : 0),
         currency: body.currency || 'USD',
         leavePerMonth: leavePerMonth,
         accruedLeave: accruedLeave,
         mlcCompliant: true,
-        status: 'ACTIVE',
-        cbaId: body.cbaId || null,
-        createdBy: 'System'
+        status: 'ACTIVE'
       }
     });
 

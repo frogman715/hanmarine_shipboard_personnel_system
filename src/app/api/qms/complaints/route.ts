@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const complaints = await prisma.complaint.findMany({
-      orderBy: { receivedDate: 'desc' }
+      orderBy: { complaintDate: 'desc' }
     });
     return NextResponse.json(complaints);
   } catch (error) {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     const year = new Date().getFullYear();
     const count = await prisma.complaint.count({
       where: {
-        receivedDate: {
+        complaintDate: {
           gte: new Date(`${year}-01-01`),
           lte: new Date(`${year}-12-31`)
         }
@@ -51,13 +51,13 @@ export async function POST(request: Request) {
         complainantType,
         complainantName,
         complainantContact: complainantContact || null,
+        subject: body.subject || 'Complaint',
         category: category || null,
         description,
-        vesselInvolved: vesselInvolved || null,
-        dateOfIncident: dateOfIncident ? new Date(dateOfIncident) : null,
-        receivedDate: new Date(),
-        priority: priority || 'MEDIUM',
-        status: 'RECEIVED'
+        relatedVessel: vesselInvolved || null,
+        relatedCrew: body.relatedCrew || null,
+        status: 'RECEIVED',
+        receivedBy: body.receivedBy || 'System'
       }
     });
 

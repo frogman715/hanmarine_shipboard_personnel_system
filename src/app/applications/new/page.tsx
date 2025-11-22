@@ -64,7 +64,7 @@ export default function NewApplicationPage() {
   }
 
   const prefillRank = searchParams.get('prefillRank') || ''
-  const candidateListBase = crew.filter((c) => {
+  const candidateListBase = crew.filter((c: any) => {
     // Show STANDBY crew (available for assignment) or AVAILABLE
     const status = c.crewStatus || c.status
     const statusOk = status === 'STANDBY' || status === 'AVAILABLE'
@@ -155,7 +155,7 @@ export default function NewApplicationPage() {
           <div style={{ color: '#9ca3af' }}>Tidak ada kandidat STANDBY (siap naik) untuk rank ini.</div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 8 }}>
-            {candidateList.map((c) => (
+            {candidateList.map((c: any) => (
               <div key={c.id} style={{ padding: 10, border: '1px solid #374151', borderRadius: 8, background: '#0b1220' }}>
                 <div style={{ color: '#e5e7eb', fontWeight: 600 }}>{c.fullName}</div>
                 <div style={{ color: '#9ca3af', fontSize: 12 }}>{c.rank || '-'} • {c.vessel || '—'}</div>

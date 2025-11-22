@@ -38,9 +38,8 @@ export async function POST(request: Request) {
         strengths: body.strengths || null,
         areasForImprovement: body.areasForImprovement || null,
         goals: body.goals || null,
-        evaluatorName: body.evaluatorName,
-        evaluatorPosition: body.evaluatorPosition,
-        createdBy: 'System'
+        evaluatedBy: body.evaluatorName || body.evaluatedBy || 'System',
+        reviewedBy: body.evaluatorPosition || body.reviewedBy || null
       }
     });
 

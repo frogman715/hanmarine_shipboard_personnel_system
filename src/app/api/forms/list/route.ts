@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const search = searchParams.get('search');
 
-    let result = FORMS_STRUCTURE;
+    let result: any = FORMS_STRUCTURE;
 
     // Filter by category
     if (category && category !== 'all') {
@@ -88,8 +88,8 @@ export async function GET(request: NextRequest) {
     // Filter by search
     if (search) {
       const searchLower = search.toLowerCase();
-      result = Object.entries(result).reduce((acc, [key, cat]) => {
-        const filteredForms = cat.forms.filter(form => 
+      result = Object.entries(result).reduce((acc, [key, cat]: [string, any]) => {
+        const filteredForms = cat.forms.filter((form: any) => 
           form.code.toLowerCase().includes(searchLower) ||
           form.title.toLowerCase().includes(searchLower)
         );
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
           acc[key] = { ...cat, forms: filteredForms };
         }
         return acc;
-      }, {} as typeof FORMS_STRUCTURE);
+      }, {} as any);
     }
 
     // Count totals

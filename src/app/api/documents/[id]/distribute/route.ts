@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
@@ -8,9 +8,9 @@ export async function POST(
   try {
     const documentId = parseInt(params.id);
     const body = await request.json();
-    const { distributedTo, distributionMethod } = body;
+    const { distributedTo, distributionMethod, distributedBy } = body;
 
-    if (!distributedTo || !distributionMethod) {
+    if (!distributedTo || !distributionMethod || !distributedBy) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
@@ -42,6 +42,7 @@ export async function POST(
         documentId,
         distributedTo,
         distributionMethod,
+        distributedBy,
         distributedAt: new Date(),
       },
     });

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const leaves = await prisma.employeeLeave.findMany({
+    const leaves = await prisma.leave.findMany({
       orderBy: { startDate: 'desc' }
     });
     return NextResponse.json(leaves);
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    const leave = await prisma.employeeLeave.create({
+    const leave = await prisma.leave.create({
       data: {
         employeeId: body.employeeId,
         leaveType: body.leaveType,
@@ -30,9 +30,8 @@ export async function POST(request: Request) {
         endDate: new Date(body.endDate),
         totalDays: body.totalDays,
         reason: body.reason,
-        medicalCertAttached: body.medicalCertAttached || false,
-        status: 'PENDING',
-        createdBy: 'System'
+        medicalCertPath: body.medicalCertAttached ? body.medicalCertPath || null : null,
+        status: 'PENDING'
       }
     });
 

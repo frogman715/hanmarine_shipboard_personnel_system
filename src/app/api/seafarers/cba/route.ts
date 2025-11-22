@@ -33,10 +33,9 @@ export async function POST(request: Request) {
         expirationDate: new Date(body.expirationDate),
         minimumWage: body.minimumWage ? parseFloat(body.minimumWage) : null,
         overtimeRate: body.overtimeRate ? parseFloat(body.overtimeRate) : null,
-        leaveEntitlement: body.leaveEntitlement ? parseFloat(body.leaveEntitlement) : 2.5,
+        leaveEntitlement: body.leaveEntitlement ? parseInt(body.leaveEntitlement) : null,
         mlcCompliant: true,
-        status: 'ACTIVE',
-        createdBy: 'System'
+        status: 'ACTIVE'
       }
     });
 
