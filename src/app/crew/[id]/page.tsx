@@ -32,7 +32,9 @@ export default async function CrewDetail({ params }: Props) {
     if (diffMonths < 0) return 'expired';
     if (diffMonths <= 3) return 'expiring-soon';
     return 'valid';
-  };  // Helper function to get status badge class
+  };
+  
+  // Helper function to get status badge class
   const getStatusClass = (status: string): string => {
     const statusMap: Record<string, string> = {
       'ACTIVE': 'active',
@@ -339,6 +341,7 @@ export default async function CrewDetail({ params }: Props) {
           </div>
         </aside>
       </section>
-    </main>
+      </div>
+    </div>
   )
 }

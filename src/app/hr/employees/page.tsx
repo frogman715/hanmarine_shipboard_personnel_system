@@ -1,3 +1,4 @@
+'use client';
 
 import { useEffect, useState } from 'react';
 
@@ -14,9 +15,9 @@ export default function EmployeesPage() {
         // const res = await fetch('/api/employees');
         // const data = await res.json();
         // setEmployees(data);
-        setEmployees([]); // Ganti [] dengan data asli jika sudah ada API
+        setEmployees([]); // Replace [] with actual data when API is available
       } catch (e) {
-        setError('Gagal memuat data employees.');
+        setError('Failed to load employee data.');
       }
     }
     fetchEmployees();
