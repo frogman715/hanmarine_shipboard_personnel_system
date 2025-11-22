@@ -112,6 +112,11 @@ if (Test-Path "node_modules") {
     if ($reinstall -eq "y" -or $reinstall -eq "Y") {
         Write-Host "   🔄 Reinstalling dependencies..."
         npm install
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "   ❌ ERROR: npm install failed" -ForegroundColor Red
+            Write-Host "      Check your network connection and npm configuration"
+            exit 1
+        }
     } else {
         Write-Host "   ⏭️  Skipping reinstall"
     }
@@ -119,6 +124,11 @@ if (Test-Path "node_modules") {
     Write-Host "   ⚠️  node_modules not found" -ForegroundColor Yellow
     Write-Host "   🔄 Installing dependencies..."
     npm install
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "   ❌ ERROR: npm install failed" -ForegroundColor Red
+        Write-Host "      Check your network connection and npm configuration"
+        exit 1
+    }
 }
 Write-Host ""
 
@@ -158,3 +168,5 @@ Write-Host "  4. Run: npm run dev (to start the development server)"
 Write-Host ""
 Write-Host "📚 For more help, see SETUP_GUIDE.md"
 Write-Host ""
+
+exit 0

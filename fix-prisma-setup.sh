@@ -112,14 +112,22 @@ if [ -d "node_modules" ]; then
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "   🔄 Reinstalling dependencies..."
-        npm install
+        if ! npm install; then
+            echo "   ❌ ERROR: npm install failed"
+            echo "      Check your network connection and npm configuration"
+            exit 1
+        fi
     else
         echo "   ⏭️  Skipping reinstall"
     fi
 else
     echo "   ⚠️  node_modules not found"
     echo "   🔄 Installing dependencies..."
-    npm install
+    if ! npm install; then
+        echo "   ❌ ERROR: npm install failed"
+        echo "      Check your network connection and npm configuration"
+        exit 1
+    fi
 fi
 echo ""
 
@@ -159,3 +167,5 @@ echo "  4. Run: npm run dev (to start the development server)"
 echo ""
 echo "📚 For more help, see SETUP_GUIDE.md"
 echo ""
+
+exit 0
