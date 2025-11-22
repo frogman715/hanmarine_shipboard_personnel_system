@@ -35,11 +35,11 @@
 
 ### 📋 Quality & Compliance
 
-- **[HGQS Procedures Manual](./docs/HGQS_PROCEDURES_MANUAL/README.md)** - ISO 9001:2015 & MLC 2006 compliance
-  - [Annex B: Hiring Seafarers](./docs/HGQS_PROCEDURES_MANUAL/ANNEX_B_HIRING_SEAFARERS.md)
-  - [Annex C: Communication Management](./docs/HGQS_PROCEDURES_MANUAL/ANNEX_C_COMMUNICATION.md)
-  - [Forms Reference Guide](./docs/HGQS_PROCEDURES_MANUAL/HGQS_FORMS_REFERENCE.md) - 42 forms catalog
-  - [Integration Guide](./docs/HGQS_PROCEDURES_MANUAL/INTEGRATION_GUIDE.md) - System integration details
+- **HGQS Procedures Manual** - ISO 9001:2015 & MLC 2006 compliance (documentation in progress)
+  - Annex B: Hiring Seafarers
+  - Annex C: Communication Management
+  - Forms Reference Guide - 42 forms catalog
+  - Integration Guide - System integration details
 
 ---
 
