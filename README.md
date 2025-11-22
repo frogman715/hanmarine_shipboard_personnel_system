@@ -1,28 +1,41 @@
 # 🚢 HanMarine Shipboard Personnel System
 
-**Complete Crew Management & HR Forms Application**
+<div align="center">
 
-Aplikasi manajemen crew lengkap dengan HR forms, certificate tracking, rotation monitoring, dan workflow management untuk shipping industry.
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![ISO](https://img.shields.io/badge/ISO-9001:2015-orange.svg)
+![MLC](https://img.shields.io/badge/MLC-2006-orange.svg)
+![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg)
+
+**Professional Maritime Crew Management & HGQS Compliance System**
+
+*A comprehensive solution for maritime crew management, HR forms processing, certificate tracking, and workflow automation - fully compliant with ISO 9001:2015 and MLC 2006 standards.*
+
+[Features](#-key-features) • [Documentation](#-documentation) • [Quick Start](#-quick-start) • [Tech Stack](#-technology-stack) • [Support](#-support)
+
+</div>
 
 ---
 
 ## 📚 Documentation
 
-### 🚀 Quick Start (BACA INI DULU!)
+### 🎯 Essential Guides
 
-- **[CARA_PAKAI_SISTEM.md](./CARA_PAKAI_SISTEM.md)** ⭐ **PANDUAN PRAKTIS - Cara pakai sistem dari nol!**
+- **[Getting Started Guide](./CARA_PAKAI_SISTEM.md)** - Complete walkthrough from installation to first use
+- **[System Workflow Guide](./WORKFLOW_GUIDE.md)** - Comprehensive workflow documentation
 
-### 📖 Complete Documentation
+### 📖 Additional Resources
 
-- **[DOCUMENTATION_HUB.md](./DOCUMENTATION_HUB.md)** 🏠 - Complete documentation navigation guide
-- **[WORKFLOW_GUIDE.md](./WORKFLOW_GUIDE.md)** 📖 - Panduan lengkap workflow sistem
-- [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) - API reference
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Panduan deployment
-- [FEATURES_CHECKLIST.md](./FEATURES_CHECKLIST.md) - Feature tracking
+- **[Documentation Hub](./DOCUMENTATION_HUB.md)** - Central documentation navigation
+- **[API Reference](./API_DOCUMENTATION.md)** - Complete API endpoint documentation
+- **[Deployment Guide](./DEPLOYMENT.md)** - Production deployment instructions
+- **[Features Checklist](./FEATURES_CHECKLIST.md)** - Feature tracking and roadmap
 
-### Quality & Compliance Documentation
+### 📋 Quality & Compliance
 
-- **[HGQS Procedures Manual](./docs/HGQS_PROCEDURES_MANUAL/README.md)** 📋 - ISO 9001:2015 & MLC 2006 compliance
+- **[HGQS Procedures Manual](./docs/HGQS_PROCEDURES_MANUAL/README.md)** - ISO 9001:2015 & MLC 2006 compliance
   - [Annex B: Hiring Seafarers](./docs/HGQS_PROCEDURES_MANUAL/ANNEX_B_HIRING_SEAFARERS.md)
   - [Annex C: Communication Management](./docs/HGQS_PROCEDURES_MANUAL/ANNEX_C_COMMUNICATION.md)
   - [Forms Reference Guide](./docs/HGQS_PROCEDURES_MANUAL/HGQS_FORMS_REFERENCE.md) - 42 forms catalog
@@ -30,118 +43,219 @@ Aplikasi manajemen crew lengkap dengan HR forms, certificate tracking, rotation 
 
 ---
 
-## 📋 Daftar Isi
+## 📑 Table of Contents
 
-1. [Fitur Utama](#-fitur-utama)
+1. [Key Features](#-key-features)
 2. [Quick Start](#-quick-start)
-3. [Modul Aplikasi](#-modul-aplikasi)
+3. [System Modules](#-system-modules)
 4. [API Endpoints](#-api-endpoints)
-5. [Database Models](#-database-models)
-6. [Workflow & Prosedur](#-workflow--prosedur)
-7. [User Guide](#-user-guide)
-8. [Tech Stack](#-tech-stack)
-9. [Development](#-development)
+5. [Database Schema](#-database-schema)
+6. [Workflows](#-workflows--procedures)
+7. [User Guides](#-user-guides)
+8. [Technology Stack](#-technology-stack)
+9. [Development](#-development-guide)
 
 ---
 
-## 🎯 Fitur Utama
+## ✨ Key Features
 
-### ✅ Sudah Selesai & Production Ready
+### 🎯 Core Functionality (Production Ready)
 
-| Fitur | Status | Deskripsi |
-|-------|--------|----------|
-| **Crew Management** | ✅ | Create, edit, view crew dengan profil lengkap |
-| **Certificate Tracking** | ✅ | Manajemen sertifikat dengan alert expiry otomatis |
-| **Dashboard** | ✅ | KPI monitoring, crew status, certificate alerts |
-| **Joining Instructions** | ✅ | Generate printable letters dengan crew details |
-| **HGF-CR-01 Forms** | ✅ | Dynamic document checklist (14 fields) |
-| **HGF-CR-02 Forms** | ✅ | Dynamic application form (41 fields) |
-| **Sea Service History** | ✅ | Track vessel assignments, ranks, GRT, dates |
-| **Application Status Workflow** | ✅ | Status: APPLIED → SHORTLISTED → INTERVIEW → APPROVED → OFFERED → ACCEPTED |
-| **Forms Database** | ✅ | FormTemplate, FormField, FormSubmission models |
+<table>
+<tr>
+<td width="50%">
 
-### 🔄 Workflow yang Tersedia
+#### 👥 Crew Management
+- Complete crew profile management
+- Advanced search and filtering
+- Real-time status tracking
+- Multi-vessel assignment support
+- Comprehensive crew records
 
+#### 📜 Certificate Tracking
+- Automated expiry alerts
+- 30-day warning system
+- Multi-certificate management
+- Document verification workflow
+- Compliance reporting
+
+#### 📊 Smart Dashboard
+- Real-time KPI monitoring
+- Visual status indicators
+- Certificate expiry alerts
+- Crew availability overview
+- Quick action shortcuts
+
+</td>
+<td width="50%">
+
+#### 📝 Dynamic Forms System
+- HGF-CR-01: Document Checklist (14 fields)
+- HGF-CR-02: Employment Application (41 fields)
+- Customizable form templates
+- Auto-save functionality
+- Status workflow tracking
+
+#### 🌊 Sea Service Management
+- Complete vessel history tracking
+- Rank and position records
+- GRT/DWT documentation
+- Company and flag tracking
+- Sign-on/off date management
+
+#### 🚀 Workflow Automation
+- Application status tracking
+- Interview scheduling
+- Document verification
+- Joining instruction generation
+- Automated notifications
+
+</td>
+</tr>
+</table>
+
+### 🔄 Integrated Workflows
+
+```mermaid
+graph LR
+    A[Crew Registration] --> B[Application HGF-CR-02]
+    B --> C[Shortlisting]
+    C --> D[Interview]
+    D --> E[Approval]
+    E --> F[Document Checklist HGF-CR-01]
+    F --> G[Joining Instructions]
+    G --> H[Onboard]
+    H --> I[Sea Service Tracking]
 ```
-RECRUITMENT FLOW:
-  Crew Master Data → Apply (HGF-CR-02) → Status Tracking → Interview → Approval → Joining
 
-PRE-DEPARTURE:
-  Document Checklist (HGF-CR-01) → Joining Instruction → Ready Sign-on
-
-ONBOARD:
-  Sea Service History → Performance Evaluation → Repatriation
-
-DASHBOARD:
-  Crew Status Real-time → Certificate Expiry Alerts → Action Items
-```
+**Process Overview:**
+- **Recruitment**: Crew Data → Application → Interview → Approval → Offer → Acceptance
+- **Pre-Departure**: Document Verification → Joining Instructions → Ready for Sign-on
+- **Onboard Operations**: Sea Service Recording → Performance Tracking → Repatriation
+- **Monitoring**: Real-time Dashboard → Certificate Alerts → Compliance Reporting
 
 ---
 
 ## 🚀 Quick Start
 
-### Installation
+### Prerequisites
+
+- **Node.js**: 18.x or higher
+- **npm**: 9.x or higher
+- **PostgreSQL**: 13+ running locally or remotely
+- **RAM**: Minimum 2GB available
+- **Storage**: Minimum 1GB free space
+
+### Installation Steps
 
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone https://github.com/frogman715/hanmarine_shipboard_personnel_system.git
+cd hanmarine_shipboard_personnel_system
+
+# 2. Install dependencies
 npm install
 
-# 2. Setup environment variables
-# Copy .env.example ke .env
-# Edit DATABASE_URL="postgresql://user:password@localhost:5433/hanmarine?schema=public"
+# 3. Configure environment variables
+# Create .env file in the root directory
+cp .env.example .env
 
-# 3. Run database migrations
+# Edit .env and set your database connection:
+# DATABASE_URL="postgresql://user:password@localhost:5433/hanmarine?schema=public"
+
+# 4. Initialize database
 npx prisma migrate dev
 
-# 4. Seed form templates
+# 5. Seed form templates and initial data
 npm run seed:forms
 
-# 5. Start dev server
+# 6. Start development server
 npm run dev
 ```
 
-### Akses Aplikasi
+### 🌐 Access the Application
 
-- **URL**: http://localhost:3000
-- **Dashboard**: /dashboard
-- **Crew List**: /crew
-- **Applications**: /applications
+| Resource | URL | Description |
+|----------|-----|-------------|
+| **Home** | http://localhost:3000 | Landing page (redirects to dashboard) |
+| **Dashboard** | http://localhost:3000/dashboard | Main control panel with KPIs |
+| **Crew Management** | http://localhost:3000/crew | Crew list and management |
+| **Applications** | http://localhost:3000/applications | Employment applications |
+| **QMS** | http://localhost:3000/qms | Quality Management System |
+
+### 🔑 Default Credentials
+
+After installation, you can use the system immediately. Authentication features are ready but optional for development.
+
+```
+Note: For production deployment, please configure authentication 
+and access control as described in DEPLOYMENT.md
+```
 
 ---
 
-## 📦 Modul Aplikasi
+## 📦 System Modules
 
-### 1. Crew Management (`/crew`)
+### 1️⃣ Crew Management Module (`/crew`)
 
-**Fitur Utama**:
-- ✅ List semua crew members dengan search
-- ✅ View crew detail dengan relations
-- ✅ Create crew dengan basic info
-- ✅ Edit crew dengan all fields
-- ✅ View certificates, sea service, applications, checklists
+**Overview**: Comprehensive crew member lifecycle management from recruitment to repatriation.
 
-**Aksi Tersedia pada Crew Detail**:
-- ✏️ **Edit Crew** → Update data & manage certificates
-- 📄 **Joining Instruction** → Generate printable letter
-- 📋 **Document Checklist** → HGF-CR-01 form
-- 🌊 **Sea Service** → Add vessel assignments
+**Key Capabilities**:
+- ✅ Advanced crew listing with search and filtering
+- ✅ Detailed crew profiles with full relational data
+- ✅ Quick crew creation with essential information
+- ✅ Complete profile editing with all attributes
+- ✅ Integrated view of certificates, sea service, applications, and checklists
 
-**API Endpoints**:
+**Available Actions**:
+| Action | Icon | Function |
+|--------|------|----------|
+| **Edit Crew** | ✏️ | Update crew data and manage certificates |
+| **Joining Instruction** | 📄 | Generate professional joining letters |
+| **Document Checklist** | 📋 | Complete HGF-CR-01 verification form |
+| **Sea Service** | 🌊 | Record vessel assignments and history |
+
+**REST API Endpoints**:
+```http
+GET    /api/crew              # Retrieve all crew members
+POST   /api/crew              # Create new crew member
+GET    /api/crew?id={id}      # Get specific crew with full details
+PUT    /api/crew?id={id}      # Update crew member information
+DELETE /api/crew?id={id}      # Remove crew member (cascade delete)
 ```
-GET  /api/crew                    → Get all crew
-POST /api/crew                    → Create crew
-GET  /api/crew?id=1               → Get specific crew
-```
 
-**Data Model Crew**:
-```
-- fullName
-- rank
-- vessel
-- status (ACTIVE, INACTIVE, ON_LEAVE, ONBOARD, STANDBY, AVAILABLE)
-- dateOfBirth, placeOfBirth, religion
-- address, phoneMobile, phoneHome
-- bloodType, heightCm, weightKg
+**Crew Data Model**:
+```typescript
+{
+  // Core Information
+  fullName: string
+  rank: string
+  vessel: string
+  status: "ACTIVE" | "INACTIVE" | "ON_LEAVE" | "ONBOARD" | "STANDBY" | "AVAILABLE"
+  
+  // Personal Details
+  dateOfBirth: Date
+  placeOfBirth: string
+  religion: string
+  nationality: string
+  
+  // Contact Information
+  address: string
+  phoneMobile: string
+  phoneHome: string
+  email: string
+  
+  // Physical Attributes
+  bloodType: string
+  heightCm: number
+  weightKg: number
+  
+  // Relationships
+  certificates: Certificate[]
+  seaServices: SeaServiceExperience[]
+  applications: EmploymentApplication[]
+  joiningInstructions: JoiningInstruction[]
+}
 ```
 
 ---
@@ -1049,40 +1163,82 @@ HOW TO USE:
 
 ---
 
-## 💻 Tech Stack
+## 💻 Technology Stack
 
-**Frontend**:
-- React 18
-- TypeScript
-- Next.js 14 (App Router)
-- CSS-in-JS (inline styles)
+### Frontend Architecture
 
-**Backend**:
-- Next.js API Routes
-- Node.js (runtime)
+<table>
+<tr>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" width="48" height="48" alt="React" />
+<br>React 18
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="48" height="48" alt="TypeScript" />
+<br>TypeScript 5.6
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" width="48" height="48" alt="Next.js" />
+<br>Next.js 14
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="48" height="48" alt="CSS3" />
+<br>CSS3
+</td>
+</tr>
+</table>
 
-**Database**:
-- PostgreSQL 13+
-- Prisma 5.22 ORM
+- **UI Framework**: React 18 with TypeScript for type safety
+- **Application Framework**: Next.js 14 with App Router for optimal performance
+- **Styling**: Modern CSS-in-JS with responsive design principles
+- **Icons**: React Icons library for consistent iconography
 
-**Additional Tools**:
-- NextAuth.js (authentication framework ready)
-- Dynamic form system (custom component)
-- Responsive design (mobile-first)
+### Backend & Database
 
-**Deployment**:
-- Docker ready
-- Docker Compose configuration
+<table>
+<tr>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="48" height="48" alt="Node.js" />
+<br>Node.js 18+
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="48" height="48" alt="PostgreSQL" />
+<br>PostgreSQL 13+
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg" width="48" height="48" alt="Prisma" />
+<br>Prisma 5.22
+</td>
+<td align="center" width="96">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" width="48" height="48" alt="Docker" />
+<br>Docker
+</td>
+</tr>
+</table>
+
+- **API Layer**: Next.js API Routes with RESTful architecture
+- **Database**: PostgreSQL with ACID compliance and full transaction support
+- **ORM**: Prisma for type-safe database operations
+- **Container**: Docker & Docker Compose for consistent deployment
+
+### Additional Technologies
+
+- **Authentication** (Ready): NextAuth.js framework integrated
+- **PDF Generation**: jsPDF with auto-table support
+- **Excel Processing**: ExcelJS for data import/export
+- **Document Templates**: Docxtemplater for professional document generation
+- **Form Management**: Custom dynamic form system with validation
 
 ### System Requirements
 
-```
-Node.js:    18+
-npm:        9+
-PostgreSQL: 13+
-RAM:        2GB minimum
-Storage:    1GB minimum
-```
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **Node.js** | 18.x | 20.x LTS |
+| **npm** | 9.x | 10.x |
+| **PostgreSQL** | 13.x | 15.x |
+| **RAM** | 2 GB | 4 GB |
+| **Storage** | 1 GB | 5 GB |
+| **CPU** | 2 cores | 4 cores |
 
 ---
 
@@ -1427,21 +1583,131 @@ npm run dev -- --log-level debug
 
 ---
 
-## 📄 License & Credits
+## 🤝 Contributing
 
-**Development Date**: November 2025  
-**Version**: 1.0.0  
-**Status**: PRODUCTION READY  
+We welcome contributions to improve the HanMarine system! Please follow these guidelines:
 
-**Features**: 
-- Crew Management System ✅
-- Certificate Tracking ✅
-- Dynamic HR Forms (HGF-CR-01, HGF-CR-02) ✅
-- Application Workflow ✅
-- Sea Service Management ✅
-- Dashboard & Monitoring ✅
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+Please ensure your code follows our coding standards and includes appropriate tests.
 
 ---
 
-**Last Updated**: November 15, 2025  
-**Next Refinement Tasks**: Crew Evaluation Forms, Repatriation Workflow, Advanced Validation, Email Integration
+## 🐛 Support
+
+### Getting Help
+
+- **Documentation**: Check our comprehensive guides in the `/docs` folder
+- **Issues**: Report bugs via [GitHub Issues](https://github.com/frogman715/hanmarine_shipboard_personnel_system/issues)
+- **Discussions**: Join conversations in [GitHub Discussions](https://github.com/frogman715/hanmarine_shipboard_personnel_system/discussions)
+
+### Reporting Bugs
+
+When reporting bugs, please include:
+- System information (OS, Node.js version, PostgreSQL version)
+- Steps to reproduce the issue
+- Expected vs actual behavior
+- Screenshots or logs if applicable
+- Error messages (check browser console and server logs)
+
+### Feature Requests
+
+We love hearing your ideas! Please submit feature requests through GitHub Issues with:
+- Clear description of the feature
+- Use case and business value
+- Proposed implementation approach (if applicable)
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+### Copyright Notice
+
+```
+Copyright (c) 2025 HanMarine Shipboard Personnel System
+All rights reserved.
+```
+
+---
+
+## 🎯 Project Status
+
+<table>
+<tr>
+<td>
+
+### Current Version
+**v1.0.0** - Production Ready
+
+### Development Status
+![Status](https://img.shields.io/badge/status-active-success.svg)
+
+</td>
+<td>
+
+### Compliance
+- ✅ ISO 9001:2015 Aligned
+- ✅ MLC 2006 Compliant
+- ✅ HGQS Procedures Integrated
+
+</td>
+</tr>
+</table>
+
+### Completed Features
+- ✅ Crew Management System
+- ✅ Certificate Tracking with Alerts
+- ✅ Dynamic HR Forms (HGF-CR-01, HGF-CR-02)
+- ✅ Application Workflow Management
+- ✅ Sea Service History Tracking
+- ✅ Real-time Dashboard & Monitoring
+- ✅ Document Generation (Joining Instructions)
+- ✅ QMS Integration
+
+### Roadmap
+- 🔄 Crew Evaluation Forms Enhancement
+- 🔄 Advanced Repatriation Workflow
+- 🔄 Email Notification System
+- 🔄 Mobile App Development
+- 🔄 Advanced Analytics & Reporting
+- 🔄 Multi-language Support
+
+---
+
+## 👨‍💻 Authors & Acknowledgments
+
+**Development Team**: HanMarine Technical Team  
+**Release Date**: November 2025  
+**Last Updated**: November 22, 2025  
+
+### Special Thanks
+
+- All contributors who have helped shape this project
+- The maritime industry professionals who provided valuable feedback
+- Open source community for the amazing tools and libraries
+
+---
+
+## 📞 Contact
+
+**Project Repository**: [github.com/frogman715/hanmarine_shipboard_personnel_system](https://github.com/frogman715/hanmarine_shipboard_personnel_system)
+
+**For Business Inquiries**: Please use GitHub Issues or Discussions
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the Maritime Industry**
+
+*Streamlining crew management and ensuring compliance excellence*
+
+[⬆ Back to Top](#-hanmarine-shipboard-personnel-system)
+
+</div>
