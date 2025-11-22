@@ -111,12 +111,12 @@
 - Compliance tracking
 - Audit trail documentation
 
-**Key Documents**:
-- [HGQS Manual Overview](./docs/HGQS_PROCEDURES_MANUAL/README.md)
-- [Annex B: Hiring Seafarers](./docs/HGQS_PROCEDURES_MANUAL/ANNEX_B_HIRING_SEAFARERS.md)
-- [Annex C: Communication Management](./docs/HGQS_PROCEDURES_MANUAL/ANNEX_C_COMMUNICATION.md)
-- [Forms Reference Guide](./docs/HGQS_PROCEDURES_MANUAL/HGQS_FORMS_REFERENCE.md)
-- [Integration Guide](./docs/HGQS_PROCEDURES_MANUAL/INTEGRATION_GUIDE.md)
+**Key Documents** (in development):
+- HGQS Manual Overview
+- Annex B: Hiring Seafarers
+- Annex C: Communication Management
+- Forms Reference Guide
+- Integration Guide
 
 **Who Should Read**:
 - ✅ Quality Management Representative (QMR)

@@ -850,7 +850,7 @@ npm run dev
 
 ### Untuk penjelasan detail:
 
-1. **[QUICK_START_GUIDE.md](./docs/HGQS_PROCEDURES_MANUAL/QUICK_START_GUIDE.md)**
+1. **QUICK_START_GUIDE.md** (dokumentasi dalam pengembangan)
    - Penjelasan sistem HGQS
    - Compliance requirements
    - Role-specific guides
