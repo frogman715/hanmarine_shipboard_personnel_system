@@ -360,31 +360,46 @@ export default function DashboardPage() {
         <MainNavigation />
         {/* Main Content */}
         <main className="dashboard-page">
-          {/* User Greeting */}
-          {currentUser && (
-            <div className="dashboard-header-top">
-              <div className="user-greeting">
-                <div className="user-avatar">{currentUser.fullName.charAt(0)}</div>
-                <div className="user-info">
-                  <h2>Welcome back, {currentUser.fullName}!</h2>
-                  <p>{currentUser.role.replace(/_/g, ' ')} • {currentUser.email}</p>
+          {/* Professional Header with Company Branding */}
+          <div className="dashboard-hero">
+            <div className="company-header">
+              <div className="company-logo-section">
+                <div className="company-logo">🚢</div>
+                <div className="company-info">
+                  <h1 className="company-name">PT HANMARINE GLOBAL INDONESIA</h1>
+                  <p className="company-tagline">Shipboard Personnel Management System</p>
+                  <div className="compliance-badges">
+                    <span className="badge badge-iso">ISO 9001:2015</span>
+                    <span className="badge badge-mlc">MLC 2006</span>
+                    <span className="badge badge-stcw">STCW 1978</span>
+                  </div>
                 </div>
               </div>
-              <button 
-                className="logout-btn"
-                onClick={() => {
-                  document.cookie = 'user_session=; Max-Age=0; path=/';
-                  window.location.href = '/login';
-                }}
-              >
-                🚪 Logout
-              </button>
+              {currentUser && (
+                <div className="user-section">
+                  <div className="user-avatar">{currentUser.fullName.charAt(0)}</div>
+                  <div className="user-details">
+                    <div className="user-name">{currentUser.fullName}</div>
+                    <div className="user-role">{currentUser.role.replace(/_/g, ' ')}</div>
+                  </div>
+                  <button 
+                    className="logout-btn"
+                    onClick={() => {
+                      document.cookie = 'user_session=; Max-Age=0; path=/';
+                      window.location.href = '/login';
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
           {loading ? (
             <div className="loading-state">
-              <div className="loading-icon">⏳</div>
-              <div className="loading-text">Loading dashboard...</div>
+              <div className="loading-spinner"></div>
+              <div className="loading-text">Loading dashboard data...</div>
             </div>
           ) : error ? (
             <div className="error-state">
@@ -393,18 +408,154 @@ export default function DashboardPage() {
             </div>
           ) : (
             <>
-              {/* Tambah Crew Baru */}
-              <AddNewCrewForm onSuccess={() => window.location.reload()} />
-              <div className="stats-grid">
-                <StatCard icon="👥" label="TOTAL CREW" value={stats.totalCrew} color="#0284c7" />
-                <StatCard icon="🚢" label="CREW ONBOARD" value={onboardCount} color="#06b6d4" />
-                <StatCard icon="⏸️" label="CREW STANDBY" value={standbyCount} color="#8b5cf6" />
-                <StatCard icon="⚠️" label="CERT < 1 TAHUN" value={stats.certificateAlerts.expiring} color="#f59e0b" />
-                <StatCard icon="📅" label="CERT < 1.5 TAHUN" value={stats.certificateAlerts.warning} color="#fbbf24" />
-                <StatCard icon="❌" label="CERT EXPIRED" value={stats.certificateAlerts.expired} color="#ef4444" />
+              {/* Quick Actions Bar */}
+              <div className="quick-actions">
+                <h3 className="section-title">⚡ Quick Actions</h3>
+                <div className="actions-grid">
+                  <Link href="/crew" className="action-card">
+                    <div className="action-icon">👥</div>
+                    <div className="action-label">View All Crew</div>
+                  </Link>
+                  <Link href="/applications" className="action-card">
+                    <div className="action-icon">📋</div>
+                    <div className="action-label">Applications</div>
+                  </Link>
+                  <Link href="/replacement-schedule" className="action-card">
+                    <div className="action-icon">📅</div>
+                    <div className="action-label">Rotation Schedule</div>
+                  </Link>
+                  <Link href="/certificates" className="action-card">
+                    <div className="action-icon">📜</div>
+                    <div className="action-label">Certificates</div>
+                  </Link>
+                </div>
               </div>
-              {/* ...rest of dashboard content remains unchanged... */}
-              {/* ...existing code... */}
+
+              {/* Add New Crew Form */}
+              <AddNewCrewForm onSuccess={() => window.location.reload()} />
+
+              {/* KPI Dashboard - Main Stats */}
+              <div className="kpi-section">
+                <h3 className="section-title">📊 Key Performance Indicators</h3>
+                <div className="stats-grid">
+                  <StatCard icon="👥" label="TOTAL CREW" value={stats.totalCrew} color="#0284c7" />
+                  <StatCard icon="🚢" label="CREW ONBOARD" value={onboardCount} color="#06b6d4" />
+                  <StatCard icon="⏸️" label="CREW STANDBY" value={standbyCount} color="#8b5cf6" />
+                  <StatCard icon="✅" label="APPROVED READY" value={approvedTotalCount} color="#10b981" />
+                </div>
+              </div>
+
+              {/* Certificate Compliance Status */}
+              <div className="compliance-section">
+                <h3 className="section-title">📜 Certificate Compliance Status</h3>
+                <div className="stats-grid">
+                  <StatCard icon="❌" label="EXPIRED" value={stats.certificateAlerts.expired} color="#ef4444" />
+                  <StatCard icon="⚠️" label="< 1 YEAR" value={stats.certificateAlerts.expiring} color="#f59e0b" />
+                  <StatCard icon="📅" label="< 1.5 YEARS" value={stats.certificateAlerts.warning} color="#fbbf24" />
+                  <StatCard 
+                    icon="✅" 
+                    label="COMPLIANT" 
+                    value={crew.reduce((sum, c) => sum + (c.certificates?.filter(cert => getCertificateStatus(cert.expiryDate) === 'ok').length || 0), 0)} 
+                    color="#10b981" 
+                  />
+                </div>
+              </div>
+
+              {/* Critical Alerts Section */}
+              {(stats.certificateAlerts.expired > 0 || rotationAlerts.filter(a => a.severity === 'critical').length > 0) && (
+                <div className="critical-alerts">
+                  <h3 className="section-title critical">🔴 Critical Alerts - Immediate Action Required</h3>
+                  <div className="alert-cards">
+                    {stats.certificateAlerts.expired > 0 && (
+                      <div className="alert-card critical">
+                        <div className="alert-icon">⛔</div>
+                        <div className="alert-content">
+                          <div className="alert-title">Expired Certificates</div>
+                          <div className="alert-value">{stats.certificateAlerts.expired} certificates expired</div>
+                          <Link href="/certificates" className="alert-action">Review Now →</Link>
+                        </div>
+                      </div>
+                    )}
+                    {rotationAlerts.filter(a => a.severity === 'critical').length > 0 && (
+                      <div className="alert-card critical">
+                        <div className="alert-icon">⏰</div>
+                        <div className="alert-content">
+                          <div className="alert-title">Contract Overdue</div>
+                          <div className="alert-value">{rotationAlerts.filter(a => a.severity === 'critical').length} crew over contract limit</div>
+                          <Link href="/replacement-schedule" className="alert-action">Plan Rotation →</Link>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Rotation Alerts */}
+              {rotationAlerts.filter(a => a.severity === 'warning').length > 0 && (
+                <div className="rotation-section">
+                  <h3 className="section-title warning">⚠️ Rotation Planning Required</h3>
+                  <div className="alert-cards">
+                    <div className="alert-card warning">
+                      <div className="alert-icon">📆</div>
+                      <div className="alert-content">
+                        <div className="alert-title">Upcoming Rotations</div>
+                        <div className="alert-value">{rotationAlerts.filter(a => a.severity === 'warning').length} crew approaching rotation deadline</div>
+                        <Link href="/replacement-schedule" className="alert-action">Plan Ahead →</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Procedure Compliance Overview */}
+              <div className="procedure-section">
+                <h3 className="section-title">📋 Shipboard Personnel Management Procedure Status</h3>
+                <div className="procedure-grid">
+                  <div className="procedure-card">
+                    <div className="procedure-icon">🔍</div>
+                    <div className="procedure-title">Recruitment & Screening</div>
+                    <div className="procedure-status">Active Applications: {crew.filter(c => c.status === 'AVAILABLE').length}</div>
+                  </div>
+                  <div className="procedure-card">
+                    <div className="procedure-icon">✅</div>
+                    <div className="procedure-title">Selection & Approval</div>
+                    <div className="procedure-status">Approved: {approvedTotalCount}</div>
+                  </div>
+                  <div className="procedure-card">
+                    <div className="procedure-icon">📄</div>
+                    <div className="procedure-title">Pre-Departure Processing</div>
+                    <div className="procedure-status">Pending Joining: {pendingJoiningCount}</div>
+                  </div>
+                  <div className="procedure-card">
+                    <div className="procedure-icon">🚢</div>
+                    <div className="procedure-title">Onboard Management</div>
+                    <div className="procedure-status">Currently Onboard: {onboardCount}</div>
+                  </div>
+                  <div className="procedure-card">
+                    <div className="procedure-icon">🔄</div>
+                    <div className="procedure-title">Crew Change & Relief</div>
+                    <div className="procedure-status">Rotations Due: {rotationAlerts.length}</div>
+                  </div>
+                  <div className="procedure-card">
+                    <div className="procedure-icon">📊</div>
+                    <div className="procedure-title">Records & Retention</div>
+                    <div className="procedure-status">Total Records: {stats.totalCrew}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* System Information Footer */}
+              <div className="system-footer">
+                <div className="footer-info">
+                  <p>Crewing Manager: {currentUser?.fullName || 'System Administrator'}</p>
+                  <p>Last Updated: {new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+                </div>
+                <div className="footer-compliance">
+                  <p>✓ STCW 1978 (Manila 2010)</p>
+                  <p>✓ MLC 2006 Compliant</p>
+                  <p>✓ ISO 9001:2015 Certified</p>
+                </div>
+              </div>
             </>
           )}
         </main>
