@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, FormEvent } from 'react';
-// Komponen Formulir Add New Crew (profesional, modern, responsif)
+// Professional Add New Crew Form Component
 function AddNewCrewForm({ onSuccess }: { onSuccess?: () => void }) {
   const [form, setForm] = useState({ fullName: '', rank: '', status: '', crewCode: '', vessel: '' });
   const [saving, setSaving] = useState(false);
@@ -23,12 +23,12 @@ function AddNewCrewForm({ onSuccess }: { onSuccess?: () => void }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
-      if (!res.ok) throw new Error('Gagal menambah crew');
-      setSuccess('Crew berhasil ditambahkan!');
+      if (!res.ok) throw new Error('Failed to add crew member');
+      setSuccess('Crew member added successfully!');
       setForm({ fullName: '', rank: '', status: '', crewCode: '', vessel: '' });
       if (onSuccess) onSuccess();
     } catch (err: any) {
-      setError(err.message || 'Terjadi kesalahan');
+      setError(err.message || 'An error occurred');
     } finally {
       setSaving(false);
     }
@@ -36,15 +36,15 @@ function AddNewCrewForm({ onSuccess }: { onSuccess?: () => void }) {
 
   return (
     <section style={{ background: '#181f2a', borderRadius: 14, padding: 28, marginBottom: 36, boxShadow: '0 2px 12px #0003', maxWidth: 900, marginLeft: 'auto', marginRight: 'auto' }}>
-      <h2 style={{ marginTop: 0, marginBottom: 18, fontSize: 22, fontWeight: 700, color: '#60a5fa', letterSpacing: 0.5 }}>➕ Tambah Crew Baru</h2>
+      <h2 style={{ marginTop: 0, marginBottom: 18, fontSize: 22, fontWeight: 700, color: '#60a5fa', letterSpacing: 0.5 }}>➕ Add New Crew Member</h2>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: 18, alignItems: 'center' }}>
-        <input name="fullName" value={form.fullName} onChange={handleChange} placeholder="Nama Lengkap" required style={{ flex: 2, minWidth: 180, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
-        <input name="rank" value={form.rank} onChange={handleChange} placeholder="Rank/Jabatan" required style={{ flex: 1, minWidth: 120, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
+        <input name="fullName" value={form.fullName} onChange={handleChange} placeholder="Full Name" required style={{ flex: 2, minWidth: 180, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
+        <input name="rank" value={form.rank} onChange={handleChange} placeholder="Rank/Position" required style={{ flex: 1, minWidth: 120, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
         <input name="status" value={form.status} onChange={handleChange} placeholder="Status" required style={{ flex: 1, minWidth: 100, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
-        <input name="crewCode" value={form.crewCode || ''} onChange={handleChange} placeholder="Crew Code (opsional)" style={{ flex: 1, minWidth: 100, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
-        <input name="vessel" value={form.vessel || ''} onChange={handleChange} placeholder="Vessel/Kapal (opsional)" style={{ flex: 1, minWidth: 120, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
+        <input name="crewCode" value={form.crewCode || ''} onChange={handleChange} placeholder="Crew Code (optional)" style={{ flex: 1, minWidth: 100, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
+        <input name="vessel" value={form.vessel || ''} onChange={handleChange} placeholder="Vessel Name (optional)" style={{ flex: 1, minWidth: 120, padding: 10, borderRadius: 7, border: '1px solid #334155', fontSize: 15 }} />
         <button type="submit" disabled={saving} style={{ padding: '10px 32px', borderRadius: 7, background: '#2563eb', color: '#fff', fontWeight: 700, border: 'none', minWidth: 120, fontSize: 15, boxShadow: '0 1px 4px #0002', transition: 'background 0.2s' }}>
-          {saving ? 'Menyimpan...' : 'Tambah Crew'}
+          {saving ? 'Saving...' : 'Add Crew'}
         </button>
       </form>
       {error && <p style={{ color: '#ef4444', marginTop: 14, fontWeight: 500 }}>{error}</p>}
