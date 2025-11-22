@@ -37,7 +37,7 @@ export default function ApplicationsTable() {
     setError(null)
     try {
       const res = await fetch('/api/applications', { cache: 'no-store' })
-      if (!res.ok) throw new Error('Gagal mengambil data applications')
+      if (!res.ok) throw new Error('Failed to fetch applications data')
       const data = await res.json()
       setApps(data)
     } catch (e: any) {
@@ -58,7 +58,7 @@ export default function ApplicationsTable() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status }),
       })
-      if (!res.ok) throw new Error((await res.json()).error || 'Gagal update status')
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to update status')
       await load()
     } catch (e: any) {
       alert(e.message ?? 'Error')
@@ -72,8 +72,8 @@ export default function ApplicationsTable() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ applicationId }),
       })
-      if (!res.ok) throw new Error((await res.json()).error || 'Gagal prepare joining')
-      alert('Joining prepared: checklist & instruction dibuat')
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to prepare joining')
+      alert('Joining prepared: checklist & instruction created')
     } catch (e: any) {
       alert(e.message ?? 'Error')
     }
@@ -143,18 +143,18 @@ export default function ApplicationsTable() {
       {error && <div style={{ color: '#fca5a5', marginBottom: 8 }}>Error: {error}</div>}
 
       {filtered.length === 0 ? (
-        <p>Tidak ada aplikasi.</p>
+        <p>No applications found.</p>
       ) : (
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Nama</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Rank Dilamar</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Tanggal</th>
+                <th style={{ textAlign: 'left', padding: '8px' }}>Name</th>
+                <th style={{ textAlign: 'left', padding: '8px' }}>Applied Rank</th>
+                <th style={{ textAlign: 'left', padding: '8px' }}>Date</th>
                 <th style={{ textAlign: 'left', padding: '8px' }}>Status</th>
                 <th style={{ textAlign: 'left', padding: '8px' }}>Notes</th>
-                <th style={{ textAlign: 'left', padding: '8px' }}>Aksi</th>
+                <th style={{ textAlign: 'left', padding: '8px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -170,7 +170,7 @@ export default function ApplicationsTable() {
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <span>{a.status}</span>
                       {isPending && <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 999, background: '#3b82f6', color: 'white' }}>Pending</span>}
-                      <span title={`Progress: ${prog.done}/${prog.total}\n\nPending:\n- ${prog.pendingLabels.join('\n- ') || 'Tidak ada, semua selesai'}`}
+                      <span title={`Progress: ${prog.done}/${prog.total}\n\nPending:\n- ${prog.pendingLabels.join('\n- ') || 'None, all completed'}`}
                         style={{ fontSize: 11, padding: '2px 6px', borderRadius: 999, background: prog.done === prog.total ? '#16a34a' : '#374151', color: 'white' }}>
                         {prog.done}/{prog.total}
                       </span>
