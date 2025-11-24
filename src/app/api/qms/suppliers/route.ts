@@ -19,7 +19,7 @@ export async function GET() {
     const suppliersWithEvaluation = suppliers.map(supplier => ({
       ...supplier,
       lastEvaluationDate: supplier.evaluations[0]?.evaluationDate || null,
-      lastEvaluationScore: supplier.evaluations[0]?.score || null
+      lastEvaluationScore: supplier.evaluations[0]?.totalScore || null
     }));
 
     return NextResponse.json(suppliersWithEvaluation);
@@ -32,7 +32,9 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
     const {
+      code,
       name,
       type,
       contactPerson,
@@ -41,25 +43,28 @@ export async function POST(request: Request) {
       address,
       services,
       registrationNumber,
-      taxId
+      taxId,
+      createdBy
     } = body;
 
-    if (!name || !type) {
+    if (!code || !name || !type || !createdBy) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const supplier = await prisma.supplier.create({
       data: {
+        code,
         name,
         type,
         contactPerson: contactPerson || null,
         email: email || null,
         phone: phone || null,
         address: address || null,
-        services: services || null,
+        productsServices: services || null,
         registrationNumber: registrationNumber || null,
         taxId: taxId || null,
-        status: 'APPROVED'
+        status: 'APPROVED',
+        createdBy
       }
     });
 

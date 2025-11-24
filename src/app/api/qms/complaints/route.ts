@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const complaints = await prisma.complaint.findMany({
-      orderBy: { receivedDate: 'desc' }
+      orderBy: { createdAt: 'desc' }
     });
     return NextResponse.json(complaints);
   } catch (error) {
@@ -23,10 +23,9 @@ export async function POST(request: Request) {
       complainantName,
       complainantContact,
       category,
+      subject,
       description,
-      vesselInvolved,
-      dateOfIncident,
-      priority
+      vesselInvolved
     } = body;
 
     if (!complainantType || !complainantName || !description) {
@@ -37,7 +36,7 @@ export async function POST(request: Request) {
     const year = new Date().getFullYear();
     const count = await prisma.complaint.count({
       where: {
-        receivedDate: {
+        createdAt: {
           gte: new Date(`${year}-01-01`),
           lte: new Date(`${year}-12-31`)
         }
@@ -52,11 +51,10 @@ export async function POST(request: Request) {
         complainantName,
         complainantContact: complainantContact || null,
         category: category || null,
+        subject: subject || '',
         description,
-        vesselInvolved: vesselInvolved || null,
-        dateOfIncident: dateOfIncident ? new Date(dateOfIncident) : null,
-        receivedDate: new Date(),
-        priority: priority || 'MEDIUM',
+        relatedVessel: vesselInvolved || null,
+        receivedBy: complainantName || '',
         status: 'RECEIVED'
       }
     });

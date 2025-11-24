@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import XLSX from 'xlsx'
+import * as XLSX from 'xlsx'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
   try {
     if (type === 'vessels') {
       // Export vessel list
-      // @ts-expect-error Prisma include types issue
       const vessels = await prisma.vessel.findMany({
         include: {
           ownerRel: { select: { name: true } },

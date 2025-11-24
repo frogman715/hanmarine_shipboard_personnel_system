@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
       return prisma.certificate.create({
         data: {
           crewId: crew.id,
-          type: key.replace(/([A-Z])/g, ' $1').trim().toUpperCase(),
+          certificateName: key.replace(/([A-Z])/g, ' $1').trim().toUpperCase(),
+          certificateNumber: doc.number,
           issueDate: new Date(),
           expiryDate: doc.expiry ? new Date(doc.expiry) : null,
           remarks: doc.number ? `Number: ${doc.number}` : undefined,

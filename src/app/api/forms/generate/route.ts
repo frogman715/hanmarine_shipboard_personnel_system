@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       include: {
         certificates: true,
         applications: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { applicationDate: 'desc' },
           take: 1,
         },
       },
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     // Set response headers for file download
     const fileName = `${formCode}_${crew.crewCode}_${Date.now()}${fileExtension}`;
     
-    return new NextResponse(filledDocument, {
+    return new NextResponse(new Uint8Array(filledDocument), {
       headers: {
         'Content-Type': getContentType(fileExtension),
         'Content-Disposition': `attachment; filename="${fileName}"`,

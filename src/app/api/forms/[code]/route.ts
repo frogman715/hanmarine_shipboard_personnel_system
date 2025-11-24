@@ -9,12 +9,7 @@ export async function GET(
 ) {
   try {
     const form = await prisma.formTemplate.findUnique({
-      where: { code: params.code },
-      include: {
-        fields: {
-          orderBy: { order: 'asc' }
-        }
-      }
+      where: { code: params.code }
     })
 
     if (!form) {

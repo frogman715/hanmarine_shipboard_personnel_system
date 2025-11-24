@@ -33,8 +33,7 @@ export async function GET(req: Request) {
         },
         application: {
           select: { id: true, appliedRank: true }
-        },
-        data: true
+        }
       },
       orderBy: { submittedAt: 'desc' }
     })
@@ -86,17 +85,10 @@ export async function POST(req: Request) {
         crewId: crewId || null,
         applicationId: applicationId || null,
         status,
-        data: {
-          create: Object.entries(data || {}).map(([fieldName, value]) => ({
-            fieldName,
-            value: typeof value === 'string' ? value : JSON.stringify(value),
-            rowIndex: 0
-          }))
-        }
+        formData: data || {},
       },
       include: {
-        template: true,
-        data: true
+        template: true
       }
     })
 

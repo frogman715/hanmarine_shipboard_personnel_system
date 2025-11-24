@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const search = searchParams.get('search');
 
-    let result = FORMS_STRUCTURE;
+    let result: Partial<typeof FORMS_STRUCTURE> = FORMS_STRUCTURE;
 
     // Filter by category
     if (category && category !== 'all') {
@@ -94,10 +94,10 @@ export async function GET(request: NextRequest) {
           form.title.toLowerCase().includes(searchLower)
         );
         if (filteredForms.length > 0) {
-          acc[key] = { ...cat, forms: filteredForms };
+          (acc as Record<string, typeof cat>)[key] = { ...cat, forms: filteredForms };
         }
         return acc;
-      }, {} as typeof FORMS_STRUCTURE);
+      }, {} as Record<string, typeof FORMS_STRUCTURE[keyof typeof FORMS_STRUCTURE]>);
     }
 
     // Count totals

@@ -1,5 +1,6 @@
-import { NextResponse, NextRequest } from 'next/server'
-import prisma from '@/lib/prisma'
+
+import { NextResponse, NextRequest } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
   try {
@@ -10,18 +11,18 @@ export async function GET(req: NextRequest) {
         where: { crewId: Number(crewId) },
         include: { crew: true, checklists: true },
         orderBy: { applicationDate: 'desc' },
-      })
-      return NextResponse.json(apps)
+      });
+      return NextResponse.json(apps);
     }
 
     const apps = await prisma.employmentApplication.findMany({
       include: { crew: true, checklists: true },
       orderBy: { applicationDate: 'desc' },
-    })
-    return NextResponse.json(apps)
+    });
+    return NextResponse.json(apps);
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Failed to fetch applications' }, { status: 500 })
+    console.error(error);
+    return NextResponse.json({ error: 'Failed to fetch applications' }, { status: 500 });
   }
 }
 

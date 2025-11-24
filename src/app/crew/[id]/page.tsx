@@ -1,26 +1,34 @@
-import prisma from '@/lib/prisma'
-import ChecklistForm from './ChecklistForm'
-import StatusChanger from './StatusChanger'
-import Breadcrumb from '@/components/Breadcrumb'
-import './crew-detail.css'
 
-type Props = { params: { id: string } }
+import prisma from '@/lib/prisma';
+import ChecklistForm from './ChecklistForm';
+import StatusChanger from './StatusChanger';
+import Breadcrumb from '@/components/Breadcrumb';
+import './crew-detail.css';
 
-export default async function CrewDetail({ params }: Props) {
-  const id = Number(params.id)
-  if (isNaN(id)) return <main><h3>Invalid crew ID</h3></main>
+function getStatusClass(status) {
+  switch (status) {
+    case 'Active':
+      return 'active';
+    case 'Inactive':
+      return 'inactive';
+    case 'Onboard':
+      return 'onboard';
+    default:
+      return '';
+  }
+}
 
+export default async function CrewDetailPage({ params }) {
   const crew = await prisma.crew.findUnique({
-    where: { id },
+    where: { id: Number(params.id) },
     include: {
+      checklists: true,
       certificates: true,
       seaServices: true,
-      applications: { orderBy: { applicationDate: 'desc' } },
-      checklists: { orderBy: { id: 'desc' } },
+      applications: true,
     },
-  })
-
-  if (!crew) return <main><h3>Crew not found</h3></main>
+  });
+  if (!crew) return <main><h3>Crew not found</h3></main>;
 
   // Helper function to get certificate status
   const getCertStatus = (expiryDate: Date | null): string => {
@@ -33,7 +41,7 @@ export default async function CrewDetail({ params }: Props) {
     if (diffMonths <= 3) return 'expiring-soon';
     return 'valid';
   };
-  
+
   // Helper function to get status badge class
   const getStatusClass = (status: string): string => {
     const statusMap: Record<string, string> = {
@@ -46,20 +54,155 @@ export default async function CrewDetail({ params }: Props) {
   };
 
   return (
-    <div className="crew-detail-page">
-      <div className="page-container">
-        
-        {/* Breadcrumb Navigation */}
-        <div className="breadcrumb-wrapper">
-          <Breadcrumb
-            items={[
-              { label: 'Dashboard', href: '/dashboard' },
-              { label: 'Crew Management', href: '/crew' },
-              { label: 'Crew List', href: '/crew' },
-              { label: crew.fullName, href: `/crew/${crew.id}` },
-            ]}
-          />
+    <main>
+      <div className="crew-detail-page">
+        <div className="page-container">
+          {/* Breadcrumb Navigation */}
+          <div className="breadcrumb-wrapper">
+            <Breadcrumb
+              items={[
+                { label: 'Dashboard', href: '/dashboard' },
+                { label: 'Crew Management', href: '/crew' },
+                { label: 'Crew List', href: '/crew' },
+                { label: crew.fullName, href: `/crew/${crew.id}` },
+              ]}
+            />
+          </div>
+
+          <h1>
+            <span className="icon">👤</span>
+            {crew.fullName}
+          </h1>
+          {crew.crewCode && (
+            <div className="crew-code">Crew Code: {crew.crewCode}</div>
+          )}
+          <div className="crew-meta">
+            <div className="meta-item">
+              <span className="icon">🎖️</span>
+              <span className="meta-label">Rank:</span>
+              <span className="meta-value">{crew.rank || 'Not specified'}</span>
+            </div>
+            <div className="meta-item">
+              <span className="icon">🚢</span>
+              <span className="meta-label">Vessel:</span>
+              <span className="meta-value">{crew.vessel || 'Not assigned'}</span>
+            </div>
+            <div className="meta-item">
+              <span className="icon">📧</span>
+              <span className="meta-label">Email:</span>
+              <span className="meta-value">{crew.email || 'Not provided'}</span>
+            </div>
+            <div className="meta-item">
+              <span className="icon">📱</span>
+              <span className="meta-label">Phone:</span>
+              <span className="meta-value">{crew.phone || 'Not provided'}</span>
+            </div>
+          </div>
+
+          <div className="action-buttons">
+            <StatusChanger crewId={crew.id} currentStatus={crew.crewStatus} />
+            <a href={`/api/crew/${crew.id}/cv-pdf`} download className="action-btn primary">
+              <span className="icon">📄</span>
+              Download CV (PDF)
+            </a>
+            <a href={`/crew/${crew.id}/edit`} className="action-btn secondary">
+              <span className="icon">✏️</span>
+              Edit Crew
+            </a>
+            <a href={`/crew/${crew.id}/joining-instruction`} className="action-btn primary">
+              <span className="icon">📋</span>
+              Joining Instruction
+            </a>
+            <a href={`/crew/${crew.id}/document-checklist`} className="action-btn warning">
+              <span className="icon">📄</span>
+              Document Checklist
+            </a>
+            <a href={`/crew/${crew.id}/sea-service`} className="action-btn secondary">
+              <span className="icon">🌊</span>
+              Sea Service
+            </a>
+            <a href={`/crew/${crew.id}/certificates`} className="action-btn secondary">
+              <span className="icon">📜</span>
+              Manage Certificates
+            </a>
+          </div>
+
+          <div className="crew-status-badge">
+            <div className={`status-badge ${getStatusClass(crew.crewStatus)}`}>{crew.crewStatus}</div>
+          </div>
+
+          {/* Onboard Forms Section */}
+          {/* ...You can re-add the Onboard Forms and other sections here as needed... */}
+
+          <section style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 380px', gap: 20 }}>
+            <div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <h3 style={{ margin: 0 }}>Certificates</h3>
+                  <a href={`/crew/${crew.id}/certificates/upload`} style={{ padding: '6px 12px', background: '#10b981', color: 'white', textDecoration: 'none', borderRadius: 4, fontSize: '0.85rem', fontWeight: 600 }}>➕ Upload</a>
+                </div>
+                {crew.certificates.length === 0 ? (
+                  <p style={{ color: '#9ca3af' }}>Tidak ada certificate terdaftar.</p>
+                ) : (
+                  <ul style={{ margin: 0, paddingLeft: 20 }}>
+                    {crew.certificates.map((cert) => (
+                      <li key={cert.id} style={{ marginBottom: 6 }}>{cert.name}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div style={{ marginBottom: 12 }}>
+                <h3 style={{ marginBottom: 6 }}>Sea Service</h3>
+                {crew.seaServices.length === 0 ? (
+                  <p style={{ color: '#9ca3af' }}>Tidak ada sea service terdaftar.</p>
+                ) : (
+                  <ul style={{ margin: 0, paddingLeft: 20 }}>
+                    {crew.seaServices.map((s) => (
+                      <li key={s.id} style={{ marginBottom: 6 }}>
+                        <strong>{s.vesselName}</strong> — {s.rank} ({s.signOn ? new Date(s.signOn).getFullYear() : 'unknown'})
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div>
+                <h3>Applications</h3>
+                {crew.applications.length === 0 ? (
+                  <p style={{ color: '#9ca3af' }}>Belum ada aplikasi.</p>
+                ) : (
+                  <ul style={{ margin: 0, paddingLeft: 20 }}>
+                    {crew.applications.map((a) => (
+                      <li key={a.id} style={{ marginBottom: 6 }}>
+                        Rank: <strong>{a.appliedRank || 'unspecified'}</strong> on {a.applicationDate ? new Date(a.applicationDate).toLocaleDateString('id-ID') : 'unknown date'}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            <aside style={{ padding: 12, border: '1px solid #e5e7eb', borderRadius: 8, background: '#f9fafb', height: 'fit-content' }}>
+              <ChecklistForm crewId={crew.id} />
+              <div style={{ marginTop: 20, paddingTop: 20, borderTop: '2px solid rgba(255,255,255,0.2)' }}>
+                <h4 style={{ margin: '0 0 12px 0', color: 'white', fontSize: '1rem', fontWeight: 600 }}>📚 Recent Checklists</h4>
+                {crew.checklists.length === 0 ? (
+                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>No checklist saved yet</p>
+                ) : (
+                  <ul style={{ margin: 0, paddingLeft: 16, fontSize: '0.85rem', color: 'white' }}>
+                    {crew.checklists.map((ch) => (
+                      <li key={ch.id} style={{ marginBottom: 8, background: 'rgba(255,255,255,0.1)', padding: 8, borderRadius: 6 }}>
+                        <strong>#{ch.id}</strong>: {ch.passportOk ? '✅ Passport' : '❌ Passport'} {ch.remarks ? `• ${ch.remarks.substring(0, 30)}...` : ''}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </aside>
+          </section>
         </div>
+<<<<<<< Updated upstream
 
         {/* Crew Header */}
         <div className="crew-header">
@@ -344,4 +487,9 @@ export default async function CrewDetail({ params }: Props) {
       </div>
     </div>
   )
+=======
+      </div>
+    </main>
+  );
+>>>>>>> Stashed changes
 }

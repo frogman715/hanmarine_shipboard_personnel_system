@@ -103,7 +103,7 @@ export async function POST(req: Request) {
           items: checklistData || {},
           completedAt: new Date().toISOString(),
           completedBy: user.fullName
-        } : null,
+        } : undefined,
       },
     })
 

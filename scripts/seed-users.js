@@ -28,28 +28,7 @@ async function seedUsers() {
       email: 'admin@hanmarine.com',
       password: defaultPassword,
       fullName: 'Admin',
-      role: 'ADMIN',
-    },
-    {
-      username: 'crewing',
-      email: 'crewing@hanmarine.com',
-      password: defaultPassword,
-      fullName: 'Crewing Manager',
-      role: 'CREWING_MANAGER',
-    },
-    {
-      username: 'expert',
-      email: 'expert@hanmarine.com',
-      password: defaultPassword,
-      fullName: 'Expert Staff',
-      role: 'EXPERT_STAFF',
-    },
-    {
-      username: 'documentation',
-      email: 'documentation@hanmarine.com',
-      password: defaultPassword,
-      fullName: 'Documentation Officer',
-      role: 'DOCUMENTATION_OFFICER',
+      role: 'ADMIN', // setara documentation
     },
     {
       username: 'accounting',
@@ -57,13 +36,6 @@ async function seedUsers() {
       password: defaultPassword,
       fullName: 'Accounting Officer',
       role: 'ACCOUNTING_OFFICER',
-    },
-    {
-      username: 'training',
-      email: 'training@hanmarine.com',
-      password: defaultPassword,
-      fullName: 'Training Officer',
-      role: 'TRAINING_OFFICER',
     },
     {
       username: 'operational',
@@ -81,7 +53,20 @@ async function seedUsers() {
       });
 
       if (existing) {
-        console.log(`⏭️  User ${userData.username} already exists, skipping...`);
+        // Update password, email, fullName, and role if user already exists
+        await prisma.user.update({
+          where: { username: userData.username },
+          data: {
+            password: userData.password,
+            email: userData.email,
+            fullName: userData.fullName,
+            role: userData.role,
+          },
+        });
+        console.log(`🔄 Updated user: ${userData.fullName} (${userData.role})`);
+        console.log(`   Username: ${userData.username}`);
+        console.log(`   Email: ${userData.email}`);
+        console.log(`   Password: hanmarine123\n`);
         continue;
       }
 
@@ -94,7 +79,7 @@ async function seedUsers() {
       console.log(`   Email: ${user.email}`);
       console.log(`   Password: hanmarine123\n`);
     } catch (error) {
-      console.error(`❌ Error creating user ${userData.username}:`, error.message);
+      console.error(`❌ Error creating/updating user ${userData.username}:`, error.message);
     }
   }
 

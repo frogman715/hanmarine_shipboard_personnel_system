@@ -25,6 +25,8 @@ export async function POST(request: Request) {
     const appraisal = await prisma.performanceAppraisal.create({
       data: {
         employeeId: body.employeeId,
+        employee: { connect: { id: body.employeeId } },
+        evaluatedBy: body.evaluatedBy || 'System',
         appraisalPeriod: body.appraisalPeriod,
         appraisalDate: new Date(body.appraisalDate),
         qualityOfWork: body.qualityOfWork,

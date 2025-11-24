@@ -13,7 +13,7 @@ const CERT_MAPPING = {
   'AFF': 'AFF', 
   'SCRB': 'SCRB',
   'SAT': 'SAT',
-  'SSAT': 'SSAT',
+  'SSAT': 'SSAT', 
   'SDSD': 'SDSD',
   'PASSPORT': 'PASSPORT',
   'RATING': 'RATING_AB',

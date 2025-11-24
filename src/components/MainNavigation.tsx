@@ -6,7 +6,8 @@ import './MainNavigation.css'
 import { 
   FaTachometerAlt, FaClipboardList, FaUserFriends, FaShip, FaUserTie, FaFileAlt, FaChartBar, FaCog, FaExclamationTriangle, FaSearch, FaTools, FaHandshake, FaBullhorn, FaFolderOpen, FaFile, FaBuilding, FaTimesCircle, FaUser, FaSignOutAlt, FaChevronDown, FaChevronUp, FaBook, FaUsers, FaCalendarAlt, FaFileContract, FaBalanceScale, FaGraduationCap, FaMoneyBillWave, FaCommentDots, FaFileImport
 } from 'react-icons/fa'
-import WorldClock from './WorldClock'
+import dynamic from 'next/dynamic'
+const WorldClock = dynamic(() => import('./WorldClock'), { ssr: false })
 
 interface User {
   id: number
@@ -81,8 +82,8 @@ export default function MainNavigation() {
           <Link href="/dashboard" className="nav-logo">
             <span className="nav-logo-icon"><FaShip /></span>
             <div className="nav-logo-text">
-              <h1>HANMARINE</h1>
-              <p>Personnel System</p>
+              <h1 style={{ letterSpacing: 1 }}>HANMARINE</h1>
+              <p style={{ fontSize: 13, margin: 0 }}>Personnel System</p>
             </div>
           </Link>
           <div className="nav-compliance-badges">

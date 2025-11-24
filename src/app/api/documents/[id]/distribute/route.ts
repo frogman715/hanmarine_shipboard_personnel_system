@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
@@ -36,13 +36,15 @@ export async function POST(
       );
     }
 
-    // Create distribution record
+
+    // TODO: Ganti 'System' dengan nama user login jika sudah ada auth
     const distribution = await prisma.documentDistribution.create({
       data: {
         documentId,
         distributedTo,
         distributionMethod,
         distributedAt: new Date(),
+        distributedBy: 'System',
       },
     });
 

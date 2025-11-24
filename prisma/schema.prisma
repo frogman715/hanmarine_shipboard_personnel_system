@@ -34,10 +34,20 @@ model Crew {
   waistSize String?
   shoeSize  String?
 
+
+
   // Kontak & alamat
   address     String?
   phoneHome   String?
   phoneMobile String?
+  phone       String?
+  emergencyContact String? @db.Text
+  emergencyPhone String?
+
+  maritalStatus String?
+  nationality String?
+  email String?
+  department String?
 
   // Status sistem
   crewStatus CrewStatus @default(ACTIVE)
@@ -86,6 +96,8 @@ model Certificate {
   id           Int       @id @default(autoincrement())
   crewId       Int
   type         String
+  certificateName String?
+  certificateNumber String?
   issueDate    DateTime?
   expiryDate   DateTime?
   issuer       String?
@@ -478,8 +490,9 @@ model ApprovalHistory {
   userRole      UserRole
   action        String   // "APPROVED", "REJECTED", "PENDING"
   comments      String?
-  createdAt     DateTime @default(now())
-  
+  createdAt       DateTime @default(now())
+  createdBy       String
+  updatedAt       DateTime @updatedAt
   application EmploymentApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   
   @@index([applicationId])
@@ -913,6 +926,8 @@ model Supplier {
   contactPerson   String?
   phone           String?
   email           String?
+  registrationNumber String? // Nomor registrasi, opsional
+  taxId String? // NPWP atau Tax ID, opsional
   
   // Products/Services provided
   productsServices String  @db.Text
@@ -1212,18 +1227,21 @@ model PerformanceAppraisal {
   
   overallScore    Float?   // Average
   overallRating   String?  // Excellent, Good, Satisfactory, Needs Improvement
-  
+
   strengths       String?  @db.Text
   areasForImprovement String? @db.Text
   goals           String?  @db.Text // Goals for next period
-  
+
   evaluatedBy     String   // Immediate superior
+  evaluatorName   String?
+  evaluatorPosition String?
   reviewedBy      String?  // QMR or Director
-  
+
   employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  
+
+  createdBy       String?
   createdAt       DateTime @default(now())
-  
+
   @@index([employeeId])
   @@index([appraisalDate])
 }
@@ -1385,6 +1403,7 @@ model CollectiveBargainingAgreement {
   contracts       SeafarerContract[]
   wageCalculations SeafarerWage[]
   
+  createdBy       String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
@@ -1421,11 +1440,11 @@ model SeafarerContract {
   signOffDate     DateTime
   contractDuration Int     // Months
   
-  basicWage       Float
+  basicWage       Float?
   fixedOvertime   Float?
   otherAllowances String?  @db.Text // JSON
   
-  totalWage       Float    // Basic + OT + allowances
+  totalWage       Float?    // Basic + OT + allowances
   currency        String   @default("USD")
   
   // Leave entitlement
@@ -1452,6 +1471,7 @@ model SeafarerContract {
   leaveRecords    SeafarerLeave[]
   grievances      SeafarerGrievance[]
   
+  createdBy       String
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   

@@ -148,6 +148,7 @@ export async function POST(
         userRole: user.role as any,
         action,
         comments: comments || null,
+        createdBy: user.fullName || String(user.id) || 'System',
       },
     })
 
